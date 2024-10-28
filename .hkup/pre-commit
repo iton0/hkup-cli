@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Check for changes in Go files
+if git diff --cached --name-only | grep -q '\.go$'; then
+    echo "Formatting Go files..."
+    gofmt -w .
+    echo ""
+
+    # Add formatted files to the staging area
+    git add .
+else
+    echo "No Go files changed. Skipping formatting."
+    echo ""
+fi
+

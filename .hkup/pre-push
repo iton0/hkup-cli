@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Check for modified Go files in the staged changes
+echo "Checking for modified Go files..."
+
+# Store the output of the git command in a variable
+modified_go_files=$(git diff --name-only HEAD^ HEAD)
+
+# Check if there are any Go files in the modified files
+if echo "$modified_go_files" | grep -q '\.go$'; then
+    echo "Go files detected. Running tests..."
+
+    # Run tests
+    if go test ./cmd; then
+        echo "Tests passed."
+        echo ""
+    else
+        echo "Tests failed. Push cancelled."
+        exit 1
+    fi
+else
+    echo "No Go files changed. Skipping tests."
+    echo ""
+fi
+
