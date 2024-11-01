@@ -1,0 +1,42 @@
+on:
+  push:
+    branches:
+      - main
+
+name: release-please
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Run your build script
+      - name: Run build script
+        run: |
+          rm -rf ./bin
+          chmod +x ./scripts/build
+          ./scripts/build
+
+      # Step 3: Use release-please to create a release
+      - name: Create release
+        id: release  # Added ID for referencing outputs
+        uses: googleapis/release-please-action@v4
+        with:
+          release-type: go
+
+      # Step 4: Upload Release Artifacts if a release was created
+      - name: Upload Release Artifacts
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload ${{ steps.release.outputs.tag_name }} \
+            ./bin/*
+
