@@ -67,10 +67,9 @@ Outputs list of either available hooks or supported languages.
 Opens your browser with Git documentation for the specified git hook, helping you understand its usage.
 
 ## Future TODOs
-- [ ] make an update subcommand
 - [ ] store custom git hooks as templates for future use (via add template subcmd)
     - Allow users to create, store, and share templates for common hooks. Users can fetch these templates over the network.
-- [ ] branch-specific hooks
+- [ ] make an update subcommand
 - [ ] logo maybe?
 
 ## Contributing
