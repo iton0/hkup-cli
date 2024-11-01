@@ -67,8 +67,6 @@ Outputs list of either available hooks or supported languages.
 Opens your browser with Git documentation for the specified git hook, helping you understand its usage.
 
 ## Future TODOs
-- [ ] add either flags or subcommand for init to specify dir and worktree; also if you want the hkup folder to be hidden or not
-- [ ] functionality to save custom setups (ie gitdir and workdir are not in same location)
 - [ ] make an update subcommand
 - [ ] store custom git hooks as templates for future use (via add template subcmd)
     - Allow users to create, store, and share templates for common hooks. Users can fetch these templates over the network.

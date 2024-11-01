@@ -16,5 +16,8 @@ var (
 )
 
 func init() {
+	initCmd.Flags().StringVar(&logic.GitDir, "gitdir", "", "specified path to git directory")
+	initCmd.Flags().StringVar(&logic.WorkTree, "worktree", "", "specified path to working tree")
+	initCmd.MarkFlagsRequiredTogether("gitdir", "worktree")
 	rootCmd.AddCommand(initCmd)
 }

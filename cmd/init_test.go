@@ -30,7 +30,7 @@ func TestInitCmd(t *testing.T) {
 	}{
 		{
 			args: []string{"init"},
-			want: "Usage:\n  hkup init [flags]\n\nFlags:\n  -h, --help   help for init\n\n",
+			want: "Usage:\n  hkup init [flags]\n\nFlags:\n      --gitdir string     specified path to git directory\n  -h, --help              help for init\n      --worktree string   specified path to working tree\n\n",
 			err:  fmt.Errorf("hooksPath already set to .hkup\n"),
 		},
 		// Add more test cases here if necessary, e.g., for error conditions

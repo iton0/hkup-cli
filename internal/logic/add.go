@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	// Lang is a flag indicating the programming language to use for the hook script. Defaults to sh.
+	// Lang is an optional flag indicating the programming language to use for the hook script. Defaults to sh.
 	Lang string
 )
 
