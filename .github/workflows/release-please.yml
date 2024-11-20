@@ -17,12 +17,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2: Run your build script
-      - name: Run build script
-        run: |
-          rm -rf ./bin
-          chmod +x ./scripts/build
-          ./scripts/build
+      # Step 2: Set up Go environment
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
 
       # Step 3: Use release-please to create a release
       - name: Create release
@@ -31,12 +30,29 @@ jobs:
         with:
           release-type: go
 
-      # Step 4: Upload Release Artifacts if a release was created
+      # Step 4: Update the version in the build and perform multi-platform builds
+      - name: Build for multiple platforms
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          VERSION="${{ steps.release.outputs.version }}"
+          echo "Updating version to ${VERSION}"
+
+          mkdir -p bin
+
+          # Build for Linux
+          GOOS=linux GOARCH=amd64 go build -o bin/hkup-linux -ldflags="-s -w -X cmd.version=${VERSION}" .
+
+          # Build for Darwin/macOS
+          GOOS=darwin GOARCH=amd64 go build -o bin/hkup-darwin -ldflags="-s -w -X cmd.version=${VERSION}" .
+
+          # Build for Windows (optional, uncomment if needed)
+          # GOOS=windows GOARCH=amd64 go build -o bin/hkup.exe -ldflags="-s -w -X cmd.version=${VERSION}" .
+
+      # Step 5: Upload Release Artifacts if a release was created
       - name: Upload Release Artifacts
         if: ${{ steps.release.outputs.release_created }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release upload ${{ steps.release.outputs.tag_name }} \
-            ./bin/*
-
+            bin/*
