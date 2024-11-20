@@ -5,38 +5,32 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/iton0/hkup-cli/internal/git"
 	"github.com/iton0/hkup-cli/internal/util"
 	"github.com/spf13/cobra"
 )
 
-// Remove deletes a specified Git hook from the .hkup directory.
+// Remove deletes a specified Git hook from the hkup folder.
 // It takes a single argument, which is the name of the hook to be removed.
 //
-// Returns error if:
-//   - the .hkup directory does not exist
-//   - the specified hook is not found
-//   - issue deleting the file
+// Returns:
+//   - error: Returns an error if the hkup folder does not exist, if the specified hook is not found,
+//     or if there is an issue deleting the file; otherwise, it returns nil.
 func Remove(cmd *cobra.Command, args []string) error {
-	// cannot remove if .hkup directory does not exist
-	if !util.DoesDirectoryExist(util.HkupDirName) {
-		return fmt.Errorf("failed running \"hkup remove\"\n%s directory does not exist", util.HkupDirName)
-	}
-
 	hook := args[0]
 
-	// Validates that arg is a supported git hook
-	_, err := git.GetHook(hook)
-	if err != nil {
-		return err
+	if !util.DoesDirectoryExist(FullPath) {
+		return fmt.Errorf("failed running \"hkup remove\"\n%s folder does not exist", FullPath)
 	}
 
-	filePath := filepath.Join(util.HkupDirName, hook)
+	filePath := filepath.Join(FullPath, hook)
 
-	// Cannot remove if git hook does not exist in the .hkup directory
 	if !util.DoesFileExist(filePath) {
-		return fmt.Errorf("hook does not exist in current working directory: %s", hook)
+		return fmt.Errorf("not supported hook: %s", hook)
 	}
 
-	return os.Remove(filePath)
+	if err := os.Remove(filePath); err != nil {
+		return fmt.Errorf("failed deleting file: %w", err)
+	}
+
+	return nil
 }

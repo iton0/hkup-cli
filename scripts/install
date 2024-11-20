@@ -28,31 +28,10 @@ esac
 LATEST_RELEASE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
 echo "Latest version: $LATEST_RELEASE"
 
-# Get the current installed version (if any)
-if [ -f "$INSTALL_PATH" ]; then
-  INSTALLED_VERSION=$($INSTALL_PATH --version 2>/dev/null)
-  echo "Currently installed version: $INSTALLED_VERSION"
-else
-  INSTALLED_VERSION="None"
-  echo "No version installed."
-fi
-
-# Check if HkUp is installed and if local version matches latest release version
-if [ "$INSTALLED_VERSION" != "None" ] && [ "$(echo "$INSTALLED_VERSION" | cut -d' ' -f3)" = "$(echo "$LATEST_RELEASE" | cut -c2-)" ]; then
-  echo "You already have the latest version installed."
-  exit 0
-fi
-
-echo ""
-
 # Download the binary for the latest release to a temporary location
 TEMP_PATH=$(mktemp)
 echo "Downloading $BINARY_NAME version $LATEST_RELEASE..."
 curl -L "https://github.com/$REPO/releases/download/$LATEST_RELEASE/$BINARY_NAME" -o "$TEMP_PATH"
-if [ $? -ne 0 ]; then
-  echo "Failed to download the binary."
-  exit 1
-fi
 
 # Move the downloaded binary to the installation path
 sudo mv "$TEMP_PATH" "$INSTALL_PATH"
@@ -62,30 +41,5 @@ if [ "$(uname)" != "CYGWIN" ] && [ "$(uname)" != "MINGW" ]; then
   sudo chmod +x "$INSTALL_PATH"  # Use sudo to change permissions
 fi
 
-# Make the HkUp configuration directory and its contents
-# Check if XDG_CONFIG_HOME is set and not empty
-if [ -z "$XDG_CONFIG_HOME" ]; then
-  # If XDG_CONFIG_HOME is not set or empty, use $HOME/.config
-  CONFIG_DIR="$HOME/.config/hkup/templates"
-else
-  # Otherwise, use $XDG_CONFIG_HOME
-  CONFIG_DIR="$XDG_CONFIG_HOME/hkup/templates"
-fi
+echo "hkup installed successfully!"
 
-mkdir -p "$CONFIG_DIR"
-
-# TODO: uncomment when finalized config settings
-# # Check if the file exists
-# FILE="$CONFIG_DIR/.hkupconfig"
-# if [ ! -f "$FILE" ]; then
-#   # If the file does not exist, create it and add text
-#   echo "editor = \"\"" > "$FILE"
-# fi
-
-echo ""
-
-if [ "$INSTALLED_VERSION" != "None" ]; then
-  echo "hkup updated successfully!"
-else
-  echo "hkup installed successfully!"
-fi

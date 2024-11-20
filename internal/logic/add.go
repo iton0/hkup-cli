@@ -2,6 +2,7 @@ package logic
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/iton0/hkup-cli/internal/git"
@@ -10,53 +11,55 @@ import (
 )
 
 var (
-	// LangFlg is an optional flag indicating the programming language to use for
-	// the hook script.
-	LangFlg string
+	// Lang is an optional flag indicating the programming language to use for the hook script. Defaults to sh.
+	Lang string
 )
 
-// Add creates a new Git hook with the specified git hook name and optional
-// programming language in the designated .hkup directory.
-//
-// Returns error if any of the steps fail above.
+// Add adds a new Git hook with the specified name and optional programming language.
+// It creates a new file in the designated `.hkup` directory, setting the appropriate shebang line based on the provided language.
+// Returns an error if any of the steps fail, including directory existence, file creation, or permission setting.
 func Add(cmd *cobra.Command, args []string) error {
-	// Makes sure .hkup directory exists in current working directory
-	if !util.DoesDirectoryExist(util.HkupDirName) {
-		return fmt.Errorf("failed running \"hkup add\"\n%s does not exist", util.HkupDirName)
+	var sheBangLine = "#!/bin/sh\n\n\n\n\n"
+	hook := args[0]
+
+	if Lang != "" {
+		if _, err := git.GetLang(Lang); err != nil {
+			return err
+		}
+		sheBangLine = fmt.Sprintf("#!/usr/bin/env %s\n\n\n\n\n", Lang)
 	}
 
-	hook := args[0]
-	filePath := filepath.Join(util.HkupDirName, hook)
+	if !util.DoesDirectoryExist(FullPath) {
+		return fmt.Errorf("failed running \"hkup add\"\n%s does not exist", FullPath)
+	}
 
-	// Does not add if hook already exists in .hkup directory
+	filePath := filepath.Join(FullPath, hook)
+
 	if util.DoesFileExist(filePath) {
 		return fmt.Errorf("%s hook already exists", hook)
 	}
 
-	var fileContent string
+	file, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
 
-	// Uses the specified language from lang flag; else default to sh
-	if LangFlg != "" {
-		// make sure lang is supported
-		if _, err := git.GetLang(LangFlg); err != nil {
-			return err
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			panic(err)
 		}
-		fileContent = fmt.Sprintf("#!/usr/bin/env %s\n\n\n\n\n", LangFlg)
-	} else {
-		fileContent = "#!/bin/sh\n\n\n\n\n"
-	}
+	}(file)
 
-	file, err := util.CreateFile(filePath)
+	_, err = file.WriteString(sheBangLine)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed writing to file: %w", err)
 	}
-	defer file.Close()
 
-	_, err = file.WriteString(fileContent)
+	err = os.Chmod(filePath, 0755)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed changing permissions of file: %w", err)
 	}
 
-	// Either changes the create file's permissions successful or returns error
-	return util.MakeExecutable(filePath)
+	return nil
 }

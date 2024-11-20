@@ -6,23 +6,24 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// List displays a list of available Git hooks or supported languages based on
-// the provided argument.
+// List displays a list of available Git hooks or supported languages based on the provided argument.
+// It takes a single argument, which determines whether to list hooks or languages.
 //
-// Returns error if the argument is invalid.
+// Returns:
+// - error: Returns an error if the argument is invalid; otherwise, it returns nil.
 func List(cmd *cobra.Command, args []string) error {
 	arg := args[0]
-	out := []string{}
+	var output []string
 
-	// NOTE: Default case is handled by cobra framework
+	// NOTE: default case is handled by cobra framework
 	switch {
 	case arg == "hook":
-		out = util.ConvertMapKeysToSlice(git.Hooks())
+		output = util.ConvertMapKeysToSlice(git.Hooks())
 	case arg == "lang":
-		out = util.ConvertMapKeysToSlice(git.SupportedLangs())
+		output = util.ConvertMapKeysToSlice(git.SupportedLangs())
 	}
 
-	for _, key := range out {
+	for _, key := range output {
 		cmd.Printf(" %s\n", key)
 	}
 
