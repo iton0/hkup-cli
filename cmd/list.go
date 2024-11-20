@@ -16,6 +16,4 @@ var (
 	}
 )
 
-func init() {
-	rootCmd.AddCommand(listCmd)
-}
+func init() {}
