@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/iton0/hkup-cli/compare/v0.2.1...v0.3.0) (2024-11-20)
+
+
+### Features
+
+* add template subcommand ([#24](https://github.com/iton0/hkup-cli/issues/24)) ([28c507e](https://github.com/iton0/hkup-cli/commit/28c507e04bd5c0de7f88eac17c6995ee35b6d3c9))
+
 ## [0.2.1](https://github.com/iton0/hkup-cli/compare/v0.2.0...v0.2.1) (2024-11-01)
 
 
