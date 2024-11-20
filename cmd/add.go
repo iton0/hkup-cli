@@ -18,6 +18,5 @@ var (
 )
 
 func init() {
-	addCmd.Flags().StringVar(&logic.Lang, "lang", "", "supported languages for git hooks")
-	rootCmd.AddCommand(addCmd)
+	addCmd.Flags().StringVar(&logic.LangFlg, "lang", "", "supported languages for git hooks")
 }
