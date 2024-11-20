@@ -8,8 +8,7 @@ Package util provides utility functions for tasks and operations such as:
 
 Additionally, this package holds all constant values used throughout the
 application such as:
-  - Git hook documentation site
-  - HkUp related directory names
+  - HkUp directory name
 
 This package is designed to abstract the above values, tasks, and operations to
 be reusable throughout the HkUp application.
