@@ -18,6 +18,4 @@ var (
 	}
 )
 
-func init() {
-	rootCmd.AddCommand(removeCmd)
-}
+func init() {}
