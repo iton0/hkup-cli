@@ -15,6 +15,7 @@ var (
 )
 
 func init() {}
+	rootCmd.AddCommand(template.RootCmd)
 
 // Execute serves as a wrapper for the Cobra API's Execute function,
 // allowing it to be called from the main package.
