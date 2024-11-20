@@ -1,7 +1,0 @@
-#!/bin/bash
-
-mkdir -p ./bin
-
-GOOS=linux GOARCH=amd64 go build -o ./bin/hkup-linux -ldflags="-s -w" .
-GOOS=darwin GOARCH=amd64 go build -o ./bin/hkup-darwin -ldflags="-s -w" .
-# GOOS=windows GOARCH=amd64 go build -o ./bin/hkup.exe -ldflags="-s -w" .
