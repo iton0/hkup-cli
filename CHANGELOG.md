@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.3.0](https://github.com/iton0/hkup-cli/compare/v0.2.1...v0.3.0) (2024-11-20)
+
+
+### Features
+
+* add config subcommand ([1b0507c](https://github.com/iton0/hkup-cli/commit/1b0507c398074614d228229a875afaef66868412))
+* add template subcommand ([e1feb0b](https://github.com/iton0/hkup-cli/commit/e1feb0bb3b77cc92630f58385e28d300ab17d72b))
+* **util:** add file ops, prompts, and config functions ([61d07ed](https://github.com/iton0/hkup-cli/commit/61d07ed947033d358b3692369a7da468f477d627))
+
 ## [0.2.1](https://github.com/iton0/hkup-cli/compare/v0.2.0...v0.2.1) (2024-11-01)
 
 
