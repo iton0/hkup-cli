@@ -24,7 +24,7 @@ func Copy(cmd *cobra.Command, args []string) error {
 	// Only start the process of copying if config path and .hkup directory exist
 	switch {
 	case !util.DoesDirectoryExist(configPath):
-		return fmt.Errorf("%s directory does not exist.", configPath)
+		return fmt.Errorf("%s directory does not exist", configPath)
 	case !util.DoesDirectoryExist(util.HkupDirName):
 		return fmt.Errorf("%s directory does not exist in current working directory", util.HkupDirName)
 	default:
@@ -76,7 +76,7 @@ func performCopy(file string) error {
 		return err
 	}
 
-	dstPath := filepath.Join(util.HkupDirName, cleanPath)
+	dstPath := util.GetHookFilePath(cleanPath)
 
 	err = util.CopyFile(file, dstPath)
 	if err != nil {
@@ -103,5 +103,5 @@ func cleanPath(path string) (string, error) {
 		return path[idx+1:], nil
 	}
 
-	return "", fmt.Errorf("template name must follow convention of \"[custom-name]#[hook-name]\"")
+	return "", fmt.Errorf("template file name must follow convention of \"<template-name>#<hook-name>\"")
 }

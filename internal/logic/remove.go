@@ -3,7 +3,6 @@ package logic
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/iton0/hkup-cli/internal/git"
 	"github.com/iton0/hkup-cli/internal/util"
@@ -20,7 +19,7 @@ import (
 func Remove(cmd *cobra.Command, args []string) error {
 	// cannot remove if .hkup directory does not exist
 	if !util.DoesDirectoryExist(util.HkupDirName) {
-		return fmt.Errorf("failed running \"hkup remove\"\n%s directory does not exist", util.HkupDirName)
+		return fmt.Errorf("%s directory does not exist", util.HkupDirName)
 	}
 
 	hook := args[0]
@@ -31,7 +30,7 @@ func Remove(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	filePath := filepath.Join(util.HkupDirName, hook)
+	filePath := util.GetHookFilePath(hook)
 
 	// Cannot remove if git hook does not exist in the .hkup directory
 	if !util.DoesFileExist(filePath) {

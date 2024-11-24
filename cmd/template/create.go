@@ -7,15 +7,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	createCmd = &cobra.Command{
-		Use:       "create [<hook-name>]",
-		Short:     "Create a git hook template",
-		ValidArgs: util.ConvertMapKeysToSlice(git.Hooks()),
-		Args:      cobra.MatchAll(cobra.MaximumNArgs(1), cobra.OnlyValidArgs),
-		RunE:      template.Create,
-	}
-)
+var createCmd = &cobra.Command{
+	Use:       "create [<hook-name>]",
+	Short:     "Create a git hook template",
+	ValidArgs: util.ConvertMapKeysToSlice(git.Hooks()),
+	Args:      cobra.MatchAll(cobra.MaximumNArgs(1), cobra.OnlyValidArgs),
+	RunE:      template.Create,
+}
 
 func init() {
 	createCmd.Flags().StringVar(&template.TemplateLangFlg, "lang", "", "supported languages for git hooks")

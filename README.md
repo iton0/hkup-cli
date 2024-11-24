@@ -28,8 +28,10 @@ External Dependencies:
 - `curl`
 - `grep`
 
-Run the script below (supports Linux and macOS):
+> [!NOTE]
+> Windows users need to install [Cygwin](https://cygwin.com/install.html) and add External Dependencies via the Cygwin setup program.
 
+Run the script below:
 ```sh
 curl -sSL https://raw.githubusercontent.com/iton0/hkup-cli/main/scripts/install | sh
 ```
@@ -42,8 +44,6 @@ curl -sSL https://raw.githubusercontent.com/iton0/hkup-cli/main/scripts/install 
 # Locates and deletes the HkUp binary
 sh -c 'rm "$(command -v 'hkup')"'
 ```
-
-</details>
 
 ## Usage Quickstart
 This section provides basic information about core usage. For detailed usage information run `hkup --help`.
@@ -101,8 +101,9 @@ hkup template remove <template-name>
 ```
 
 ## Roadmap to v1.0.0
-1.  windows support
-2.  wrapper for git init & clone and gh repo create & clone
-3.  HkUp logo (may or may not keep this one)
-4.  better test coverage
-5.  Allow users to create, store, and share templates. Users can fetch these templates over internet (may need to make another repo for this).
+1. ~~windows support~~
+2. wrapper for git init & clone and gh repo create & clone
+3. HkUp logo (may or may not keep this one)
+4. better test coverage
+5. Allow users to create, store, and share templates. Users can fetch these templates over internet (may need to make another repo for this).
+6. Finalize HkUp configuration settings and make subcommand visible

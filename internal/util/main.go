@@ -51,20 +51,27 @@ func CreateFile(path string) (*os.File, error) {
 
 // DoesDirectoryExist reports if a directory exists at the specified path.
 func DoesDirectoryExist(path string) bool {
-	if info, err := os.Stat(path); os.IsNotExist(err) {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
 		return false
-	} else {
-		return info.IsDir()
 	}
+
+	return info.IsDir()
 }
 
 // DoesFileExist reports if a file exists at the specified path.
 func DoesFileExist(path string) bool {
-	if info, err := os.Stat(path); os.IsNotExist(err) {
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
 		return false
-	} else {
-		return !info.IsDir()
 	}
+
+	return !info.IsDir()
+}
+
+// GetHookFilePath returns the file path to the git hook in the .hkup directory.
+func GetHookFilePath(hook string) string {
+	return filepath.Join(HkupDirName, hook)
 }
 
 // GetConfigDirPath returns the available HkUp config directory path.
@@ -120,6 +127,7 @@ func CopyFile(src, dst string) error {
 
 // MakeExecutable makes the filePath executable.
 // Returns error if issue with making executable.
+// NOTE: this does not work for Windows
 func MakeExecutable(filePath string) error {
 	return os.Chmod(filePath, 0755)
 }
@@ -177,7 +185,7 @@ func UserInputPrompt(prompt string) (string, error) {
 // Returns editor name if found and error if issue with searching for editor.
 func GetEditor() (string, error) {
 	// Check the HkUp config file
-	editor, err := GetTOMLValue(GetConfigFilePath(), "editor")
+	editor, err := GetINIValue(GetConfigFilePath(), "editor")
 	if err != nil {
 		return "", err
 	} else if editor != "" {
@@ -201,9 +209,9 @@ func GetEditor() (string, error) {
 	return "", fmt.Errorf("failed to find an editor")
 }
 
-// GetTOMLValue gets the value of a specific key from a flat TOML file.
+// GetINIValue gets the value of a specific key from a flat INI file.
 // Returns value and error if issue with opening or reading file.
-func GetTOMLValue(filePath, key string) (string, error) {
+func GetINIValue(filePath, key string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", nil
@@ -248,9 +256,9 @@ func GetTOMLValue(filePath, key string) (string, error) {
 	return "", fmt.Errorf("%s is not a valid key", key) // Returns empty string if key not found
 }
 
-// SetTOMLValue modifies the value of a key in a flat TOML file.
+// SetINIValue modifies the value of a key in a flat INI file.
 // Returns error if key not found or issue with reading or wriiting to file.
-func SetTOMLValue(filePath, key, newValue string) error {
+func SetINIValue(filePath, key, newValue string) error {
 	// Open the TOML file
 	file, err := os.Open(filePath)
 	if err != nil {

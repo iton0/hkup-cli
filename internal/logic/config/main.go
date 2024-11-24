@@ -1,5 +1,5 @@
 /*
-Package template provides functionality for getting and setting HkUp config settings.
+Package config provides functionality for getting and setting HkUp config settings.
 This package utilizes the cobra library for command-line interaction and is
 implemented in the respective commands of the
 [github.com/iton0/hkup-cli/cmd/config] package.

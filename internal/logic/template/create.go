@@ -91,7 +91,7 @@ func createTemplate(templatePath string) error {
 
 	// Copies git hook from current working directory to template directory
 	if template.useCwd {
-		srcPath := filepath.Join(util.HkupDirName, template.hook)
+		srcPath := util.GetHookFilePath(template.hook)
 		return util.CopyFile(srcPath, createdTemplate) // returns either nil or error
 	}
 
@@ -157,7 +157,7 @@ func displayPrompt(templatePath string, arg ...string) error {
 		if out, err := doesTemplateExist(templatePath, TemplateNameFlg); err != nil {
 			return err
 		} else if out != "" {
-			return fmt.Errorf("template %s already exists\n", out)
+			return fmt.Errorf("template %s already exists", out)
 		}
 		template.name = TemplateNameFlg
 	} else if err := displayNamePrompt(templatePath); err != nil {
@@ -234,15 +234,13 @@ func displayCwdPrompt() error {
 		return nil
 	}
 
-	yes, err := util.YesNoPrompt("Use from current working directory?")
+	isYes, err := util.YesNoPrompt("Use from current working directory?")
 	if err != nil {
 		return err
 	}
 
 	// useCwd field is false by default so only need to check if "yes"
-	if yes {
-		template.useCwd = true
-	}
+	template.useCwd = isYes
 	return nil
 }
 
@@ -296,29 +294,25 @@ func displayNamePrompt(templatePath string) error {
 // directory.
 // Returns an error if issue with reading reponse.
 func displayCopyPrompt() error {
-	yes, err := util.YesNoPrompt("Copy to current working directory?")
+	isYes, err := util.YesNoPrompt("Copy to current working directory?")
 	if err != nil {
 		return err
 	}
 
 	// copyHook field is false by default so only need to check if "yes"
-	if yes {
-		template.copyHook = true
-	}
+	template.copyHook = isYes
 	return nil
 }
 
 // displayEditPrompt asks whether to edit the created template.
 // Returns an error if issue with reading reponse.
 func displayEditPrompt() error {
-	yes, err := util.YesNoPrompt("Edit template?")
+	isYes, err := util.YesNoPrompt("Edit template?")
 	if err != nil {
 		return err
 	}
 
 	// edit field is false by default so only need to check if "yes"
-	if yes {
-		template.edit = true
-	}
+	template.edit = isYes
 	return nil
 }

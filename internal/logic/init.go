@@ -48,7 +48,7 @@ func Init(cmd *cobra.Command, args []string) error {
 	}
 
 	// Holds everything after the base 'git' in the command
-	gitCmd := []string{}
+	var gitCmd []string
 
 	if GitDirFlg != "" && WorkTreeFlg != "" {
 		gitCmd = []string{"--git-dir=" + GitDirFlg, "--work-tree=" + WorkTreeFlg, "config", "--local", "core.hooksPath", util.HkupDirName}

@@ -5,13 +5,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	editCmd = &cobra.Command{
-		Use:   "edit <template-name>",
-		Short: "Edit a git hook template",
-		Args:  cobra.ExactArgs(1),
-		RunE:  template.Edit,
-	}
-)
+var editCmd = &cobra.Command{
+	Use:   "edit <template-name>",
+	Short: "Edit a git hook template",
+	Args:  cobra.ExactArgs(1),
+	RunE:  template.Edit,
+}
 
 func init() {}

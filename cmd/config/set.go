@@ -5,13 +5,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	setCmd = &cobra.Command{
-		Use:   "set <config-setting> <value>",
-		Short: "Set a HkUp config setting",
-		Args:  cobra.ExactArgs(2),
-		RunE:  config.Set,
-	}
-)
+var setCmd = &cobra.Command{
+	Use:   "set <config-setting> <value>",
+	Short: "Set a HkUp config setting",
+	Args:  cobra.ExactArgs(2),
+	RunE:  config.Set,
+}
 
 func init() {}
