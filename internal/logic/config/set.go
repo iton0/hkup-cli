@@ -11,5 +11,5 @@ import (
 func Set(cmd *cobra.Command, args []string) error {
 	// Either setting configuration setting is successful and returns nil or
 	// returns error
-	return util.SetTOMLValue(util.GetConfigFilePath(), args[0], args[1])
+	return util.SetINIValue(util.GetConfigFilePath(), args[0], args[1])
 }

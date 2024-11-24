@@ -33,8 +33,8 @@ func Doc(cmd *cobra.Command, args []string) error {
 		termCmd = exec.Command("xdg-open", url)
 	case "darwin":
 		termCmd = exec.Command("open", url)
-	// case "windows":
-	// 	termCmd = exec.Command("rundll32", "url.dll,FileProtocolHandler", url)
+	case "windows":
+		termCmd = exec.Command("explorer", url)
 	default:
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}

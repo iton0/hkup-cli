@@ -1,5 +1,5 @@
 /*
-Package template initializes the config subcommand and its subcommands.
+Package config initializes the config subcommand and its subcommands.
 
 This package is utilized in the root command of [github.com/iton0/hkup-cli/cmd]
 package.

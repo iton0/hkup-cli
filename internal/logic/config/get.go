@@ -9,7 +9,7 @@ import (
 //
 // Returns error if issue with getting the value.
 func Get(cmd *cobra.Command, args []string) error {
-	out, err := util.GetTOMLValue(util.GetConfigFilePath(), args[0])
+	out, err := util.GetINIValue(util.GetConfigFilePath(), args[0])
 	if err != nil {
 		return err
 	}

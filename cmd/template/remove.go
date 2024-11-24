@@ -5,14 +5,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	removeCmd = &cobra.Command{
-		Use:     "remove <template-name>",
-		Aliases: []string{"rm"},
-		Short:   "Remove a git hook template",
-		Args:    cobra.ExactArgs(1),
-		RunE:    template.Remove,
-	}
-)
+var removeCmd = &cobra.Command{
+	Use:     "remove <template-name>",
+	Aliases: []string{"rm"},
+	Short:   "Remove a git hook template",
+	Args:    cobra.ExactArgs(1),
+	RunE:    template.Remove,
+}
 
 func init() {}

@@ -5,15 +5,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	initCmd = &cobra.Command{
-		Use:   "init",
-		Short: "Initialize hkup",
-		Long:  "Create an empty hkup directory or reinitialize an existing one",
-		Args:  cobra.NoArgs,
-		RunE:  logic.Init,
-	}
-)
+var initCmd = &cobra.Command{
+	Use:   "init",
+	Short: "Initialize hkup",
+	Long:  "Create an empty hkup directory or reinitialize an existing one",
+	Args:  cobra.NoArgs,
+	RunE:  logic.Init,
+}
 
 func init() {
 	initCmd.Flags().StringVar(&logic.GitDirFlg, "gitdir", "", "specified path to git directory")

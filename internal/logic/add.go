@@ -2,18 +2,15 @@ package logic
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/iton0/hkup-cli/internal/git"
 	"github.com/iton0/hkup-cli/internal/util"
 	"github.com/spf13/cobra"
 )
 
-var (
-	// LangFlg is an optional flag indicating the programming language to use for
-	// the hook script.
-	LangFlg string
-)
+// LangFlg is an optional flag indicating the programming language to use for
+// the hook script.
+var LangFlg string
 
 // Add creates a new Git hook with the specified git hook name and optional
 // programming language in the designated .hkup directory.
@@ -22,11 +19,11 @@ var (
 func Add(cmd *cobra.Command, args []string) error {
 	// Makes sure .hkup directory exists in current working directory
 	if !util.DoesDirectoryExist(util.HkupDirName) {
-		return fmt.Errorf("failed running \"hkup add\"\n%s does not exist", util.HkupDirName)
+		return fmt.Errorf("%s directory does not exist", util.HkupDirName)
 	}
 
 	hook := args[0]
-	filePath := filepath.Join(util.HkupDirName, hook)
+	filePath := util.GetHookFilePath(hook)
 
 	// Does not add if hook already exists in .hkup directory
 	if util.DoesFileExist(filePath) {

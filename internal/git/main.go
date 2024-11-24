@@ -67,11 +67,12 @@ var (
 // GetHook retrieves URL section of git doc site for specified Git hook.
 // Returns URL section of specified hook and error if the hook is not supported.
 func GetHook(key string) (string, error) {
-	if val, exist := hooks[key]; !exist {
+	val, exist := hooks[key]
+	if !exist {
 		return "", fmt.Errorf("hook not supported: %s", key)
-	} else {
-		return val, nil
 	}
+
+	return val, nil
 }
 
 // Hooks returns the complete map of all defined Git hooks.
@@ -84,9 +85,9 @@ func Hooks() map[string]string {
 func GetLang(key string) (bool, error) {
 	if _, exist := supportedLangs[key]; !exist {
 		return false, fmt.Errorf("language not supported: %s", key)
-	} else {
-		return true, nil
 	}
+
+	return true, nil
 }
 
 // SupportedLangs returns the map of supported programming languages for Git hooks.

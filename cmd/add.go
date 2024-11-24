@@ -7,15 +7,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	addCmd = &cobra.Command{
-		Use:       "add <hook-name>",
-		Short:     "Add git hook",
-		ValidArgs: util.ConvertMapKeysToSlice(git.Hooks()),
-		Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-		RunE:      logic.Add,
-	}
-)
+var addCmd = &cobra.Command{
+	Use:       "add <hook-name>",
+	Short:     "Add git hook",
+	ValidArgs: util.ConvertMapKeysToSlice(git.Hooks()),
+	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	RunE:      logic.Add,
+}
 
 func init() {
 	addCmd.Flags().StringVar(&logic.LangFlg, "lang", "", "supported languages for git hooks")

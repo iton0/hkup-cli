@@ -17,7 +17,7 @@ func Remove(cmd *cobra.Command, args []string) error {
 
 	// Cannot remove template if HkUp template config path does not exist
 	if !util.DoesDirectoryExist(templatePath) {
-		return fmt.Errorf("%s directory does not exist.", templatePath)
+		return fmt.Errorf("%s directory does not exist", templatePath)
 	}
 
 	templateName := args[0]

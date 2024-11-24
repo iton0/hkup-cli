@@ -7,15 +7,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	removeCmd = &cobra.Command{
-		Use:       "remove <hook-name>",
-		Aliases:   []string{"rm"},
-		Short:     "Remove git hook",
-		ValidArgs: util.ConvertMapKeysToSlice(git.Hooks()),
-		Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-		RunE:      logic.Remove,
-	}
-)
+var removeCmd = &cobra.Command{
+	Use:       "remove <hook-name>",
+	Aliases:   []string{"rm"},
+	Short:     "Remove git hook",
+	ValidArgs: util.ConvertMapKeysToSlice(git.Hooks()),
+	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	RunE:      logic.Remove,
+}
 
 func init() {}
