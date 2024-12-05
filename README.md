@@ -9,28 +9,26 @@
 ![GitHub stars](https://img.shields.io/github/stars/iton0/hkup-cli?style=social)
 
 ## Introduction
-Git hooks automate and implement processes in your workflow, increasing code quality and consistency.
-
-Common use cases include:
+Git hooks automate processes in your workflow, enhancing code quality and consistency. Common use cases include:
 - Commit Message Validation
 - Environment Configuration
 - Formatting
 - Linting
 - Testing
 
-However, many developers avoid Git hooks due to a lack of awareness and the perceived complexity of setup, discouraging them from using this feature.
+Despite their benefits, many developers avoid Git hooks due to a lack of awareness and perceived setup complexity.
 
-**HkUp** simplifies the management of Git hooks, allowing you to focus on the logic and usage of your hooks instead.
+HkUp simplifies Git hook management, allowing you to **focus on the logic and functionality of your hooks**. Plus, with HkUp, **your hooks are version-controlled**.
 
 ## Installation
-External Dependencies:
+### External Dependencies:
 - `git`
 - `curl`
 - `grep`
-
 > [!NOTE]
 > Windows users need to install [Cygwin](https://cygwin.com/install.html) and add External Dependencies via the Cygwin setup program.
 
+### Install Script
 Run the script below:
 ```sh
 curl -sSL https://raw.githubusercontent.com/iton0/hkup-cli/main/scripts/install | sh
@@ -49,15 +47,31 @@ sh -c 'rm "$(command -v 'hkup')"'
 This section provides basic information about core usage. For detailed usage information run `hkup --help`.
 
 ### Initializing hkup
-Run the following command in your git repository to initialize HkUp:
+HkUp provides two ways of initializing:
+
+#### 1. Creating a New Repository
+After you create a Git repository, run the following command in your Git repository to initialize HkUp:
+
 ```sh
 hkup init
 ```
 
 This creates a **.hkup** directory and sets the local **core.hooksPath** variable. If the directory already exists, it will simply update the path variable. The path is relative, ensuring that moving your repository won’t affect hook sourcing.
 
+#### 2. Cloning a Repository
+The above command also works after cloning a repository but HkUp also provides means to wrap Git-related cloning commands for an easier process. By prepending your Git cloning command with `hkup --` you can clone your repository and initialize/reinitialize HkUp in a single command.
+
+```sh
+# Cloning the HkUp Github repository
+# and initializing the .hkup folder
+hkup -- git clone git@github.com:iton0/hkup-cli.git
+```
+> [!NOTE]
+> This works even for bare Git repositories!
+
 ### Adding & Removing hooks
 Add or remove hooks easily with:
+
 ```sh
 hkup add <hook-name>
 
@@ -70,13 +84,13 @@ A **template** is a pre-configured, reusable Git hook that simplifies and automa
 The templates are stored in the HkUp config templates directory that can either be found at **$XDG_CONFIG_HOME/hkup/templates** or **$HOME/.config/hkup/templates** depending on your system.
 
 #### Naming Convention
-Template files follow the naming convention:
-`<template-name>#<hook-name>`
-Where:
+Template files follow the naming convention `<template-name>#<hook-name>` where:
 - `<template-name>` is the name of the template.
+- `#` is the separator between template and hook name.
 - `<hook-name>` is the specific Git hook (e.g., pre-commit, post-merge).
 
 **Create a template**:
+
 ```sh
 hkup template create
 # OR
@@ -84,11 +98,13 @@ hkup template create <hook-name>
 ```
 
 **Copy a template** into current working directory:
+
 ```sh
 hkup template copy <template-name>
 ```
 
 **Edit a template**:
+
 ```sh
 hkup template edit <template-name>
 ```
@@ -96,14 +112,15 @@ hkup template edit <template-name>
 > Editing a template will not update its copies.
 
 **Remove a template**:
+
 ```sh
 hkup template remove <template-name>
 ```
 
 ## Roadmap to v1.0.0
 1. ~~windows support~~
-2. wrapper for git init & clone and gh repo create & clone
+2. ~~wrapper for git & gh clone~~
 3. HkUp logo (may or may not keep this one)
 4. better test coverage
 5. Allow users to create, store, and share templates. Users can fetch these templates over internet (may need to make another repo for this).
-6. Finalize HkUp configuration settings and make subcommand visible
+6. Finalize HkUp configuration settings and make config subcommand visible
