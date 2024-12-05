@@ -18,12 +18,8 @@ import (
 //   - error if the hook key is invalid, if the platform is unsupported, or if
 //     there is an issue starting the command.
 func Doc(cmd *cobra.Command, args []string) error {
-	// Checks if the key exists and returns the url portion to add
-	// to the git doc site base
-	hook, err := git.GetHook(args[0])
-	if err != nil {
-		return err
-	}
+	// URL section of specified hook
+	hook := git.GetHookUrl(args[0])
 
 	url := "https://git-scm.com/docs/githooks#" + hook // Full url path for the specified git hook
 	var termCmd *exec.Cmd
@@ -39,8 +35,7 @@ func Doc(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("unsupported platform: %s", runtime.GOOS)
 	}
 
-	err = termCmd.Start()
-	if err != nil {
+	if err := termCmd.Start(); err != nil {
 		return err
 	}
 

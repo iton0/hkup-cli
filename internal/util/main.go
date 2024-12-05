@@ -85,6 +85,27 @@ func GetConfigDirPath() (configPath string) {
 	return configPath
 }
 
+// RunCommandInTerminal takes the root command and its args to run and output
+// the command in the same terminal process. Returns error if issue with
+// starting or waiting for command to finish.
+func RunCommandInTerminal(root string, args ...string) error {
+	cmd := exec.Command(root, args...)
+
+	// This allows the command to show in the same terminal process
+	// INFO: https://stackoverflow.com/questions/12088138/trying-to-launch-an-external-editor-from-within-a-go-program#12089980
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	// Starts the command
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	// Waits for the command to finish
+	return cmd.Wait() // Either success and returns nil or returns error if issue
+}
+
 // GetConfigFilePath returns the HkUp file path that holds configuration settings.
 func GetConfigFilePath() string {
 	return filepath.Join(GetConfigDirPath(), ".hkupconfig")
@@ -127,7 +148,6 @@ func CopyFile(src, dst string) error {
 
 // MakeExecutable makes the filePath executable.
 // Returns error if issue with making executable.
-// NOTE: this does not work for Windows
 func MakeExecutable(filePath string) error {
 	return os.Chmod(filePath, 0755)
 }
@@ -181,37 +201,10 @@ func UserInputPrompt(prompt string) (string, error) {
 	return strings.TrimSpace(scanner.Text()), nil
 }
 
-// GetEditor makes best effort to find default editor for HkUp.
-// Returns editor name if found and error if issue with searching for editor.
-func GetEditor() (string, error) {
-	// Check the HkUp config file
-	editor, err := GetINIValue(GetConfigFilePath(), "editor")
-	if err != nil {
-		return "", err
-	} else if editor != "" {
-		return editor, nil
-	}
-
-	// Check in global gitconfig file
-	if out, err := exec.Command("git", "config", "--global", "core.editor").CombinedOutput(); err != nil {
-		return "", err
-	} else if len(out) != 0 {
-		// The out has a newline character at the end so take elements up until the
-		// "\" of the "\n"
-		return string(out[0:(len(out) - 1)]), nil // Converts byte slice into string
-	}
-
-	// Check for EDITOR var
-	if editor, exist := os.LookupEnv("EDITOR"); exist && editor != "" {
-		return editor, nil
-	}
-
-	return "", fmt.Errorf("failed to find an editor")
-}
-
-// GetINIValue gets the value of a specific key from a flat INI file.
+// GetINIValue gets the value of a specific key from the config settings INI file.
 // Returns value and error if issue with opening or reading file.
-func GetINIValue(filePath, key string) (string, error) {
+func GetINIValue(key string) (string, error) {
+	filePath := GetConfigFilePath()
 	file, err := os.Open(filePath)
 	if err != nil {
 		return "", nil
@@ -256,9 +249,10 @@ func GetINIValue(filePath, key string) (string, error) {
 	return "", fmt.Errorf("%s is not a valid key", key) // Returns empty string if key not found
 }
 
-// SetINIValue modifies the value of a key in a flat INI file.
+// SetINIValue modifies the value of a key in the config settings INI file.
 // Returns error if key not found or issue with reading or wriiting to file.
-func SetINIValue(filePath, key, newValue string) error {
+func SetINIValue(key, newValue string) error {
+	filePath := GetConfigFilePath()
 	// Open the TOML file
 	file, err := os.Open(filePath)
 	if err != nil {

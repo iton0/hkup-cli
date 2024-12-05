@@ -179,7 +179,7 @@ func displayPrompt(templatePath string, arg ...string) error {
 
 		// Takes language if lang flag used or asks for it
 		if TemplateLangFlg != "" {
-			if _, err = git.GetLang(TemplateLangFlg); err != nil {
+			if _, err = git.CheckLangSupported(TemplateLangFlg); err != nil {
 				return err
 			}
 			template.lang = TemplateLangFlg
@@ -208,7 +208,7 @@ func displayPrompt(templatePath string, arg ...string) error {
 }
 
 // displayHookPrompt asks for valid git hook name to use for template.
-// Returns error is issue with reading response.
+// Returns error if issue with reading response.
 func displayHookPrompt() error {
 	in, err := util.UserInputPrompt("Git hook name:")
 	if err != nil {
@@ -216,7 +216,7 @@ func displayHookPrompt() error {
 	}
 
 	// Recursively calls this function until supplied with supported git hook
-	if _, err = git.GetHook(in); err != nil {
+	if out := git.GetHookUrl(in); out == "" {
 		fmt.Println("Not a supported Git hook. Please try again")
 		return displayHookPrompt()
 	}
@@ -227,7 +227,7 @@ func displayHookPrompt() error {
 
 // displayCwdPrompt asks whether to use current working directory's git hook as
 // template.
-// Returns error is issue with reading response.
+// Returns error if issue with reading response.
 func displayCwdPrompt() error {
 	// Does not display if the git hook type does not exist in the cwd
 	if !util.DoesFileExist(filepath.Join(util.HkupDirName, template.hook)) {
@@ -259,7 +259,7 @@ func displayLangPrompt() error {
 		return nil
 	default:
 		// Recursively calls this function until supplied with supported language
-		if _, err = git.GetLang(in); err != nil {
+		if _, err = git.CheckLangSupported(in); err != nil {
 			fmt.Println("Not a supported language. Please try again")
 			return displayLangPrompt()
 		}

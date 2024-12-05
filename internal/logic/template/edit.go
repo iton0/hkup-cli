@@ -32,27 +32,39 @@ func Edit(cmd *cobra.Command, args []string) error {
 // editTemplate opens the template file with the default editor for HkUp.
 // Returns error if issue with opening editor.
 func editTemplate(path string) error {
-	editor, err := util.GetEditor()
+	editor, err := getEditor()
 	if err != nil {
 		return err
 	}
 
-	// Create the command to open the editor with the template file
-	cmd := exec.Command(editor, path)
+	// Run command to open template file with editor
+	return util.RunCommandInTerminal(editor, path) // Either success or return error
+}
 
-	// This allows the editor to be opened in the same terminal
-	// Source: https://stackoverflow.com/questions/12088138/trying-to-launch-an-external-editor-from-within-a-go-program#12089980
-	// NOTE: This only applies to terminal-based editors such as vim, nvim, etc.
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	// Starts the editor
-	err = cmd.Start()
+// getEditor makes best effort to find default editor for HkUp.
+// Returns editor name if found and error if issue with searching for editor.
+func getEditor() (string, error) {
+	// Check the HkUp config file
+	editor, err := util.GetINIValue("editor")
 	if err != nil {
-		return err
+		return "", err
+	} else if editor != "" {
+		return editor, nil
 	}
 
-	// Waits for the user to finish editing
-	return cmd.Wait() // Either success and returns nil or returns error if issue
+	// Check in global gitconfig file
+	if out, err := exec.Command("git", "config", "--global", "core.editor").CombinedOutput(); err != nil {
+		return "", err
+	} else if len(out) != 0 {
+		// The out has a newline character at the end so take elements up until the
+		// "\" of the "\n"
+		return string(out[0:(len(out) - 1)]), nil // Converts byte slice into string
+	}
+
+	// Check for EDITOR var
+	if editor, exist := os.LookupEnv("EDITOR"); exist && editor != "" {
+		return editor, nil
+	}
+
+	return "", fmt.Errorf("failed to find an editor")
 }
