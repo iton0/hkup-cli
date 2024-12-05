@@ -27,7 +27,7 @@ func Remove(cmd *cobra.Command, args []string) error {
 	case err != nil:
 		return err
 	case file == "": // Specified template does not exist
-		return fmt.Errorf("not valid arg \"%s\" for \"hkup template remove\"", templateName)
+		return fmt.Errorf("template %s does not exist", templateName)
 	default: // Template exists and will try to remove
 		return os.Remove(file) // Either success and returns nil or returns error
 	}
