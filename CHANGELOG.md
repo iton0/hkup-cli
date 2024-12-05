@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/iton0/hkup-cli/compare/v0.3.0...v0.3.1) (2024-12-05)
+
+
+### Bug Fixes
+
+* "hkup -v" produces correct version ([0671c0e](https://github.com/iton0/hkup-cli/commit/0671c0e04d9e05d8e81fc82e464248784dd2aa9d))
+
 ## [0.3.0](https://github.com/iton0/hkup-cli/compare/v0.2.1...v0.3.0) (2024-12-05)
 
 
