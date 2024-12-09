@@ -10,10 +10,6 @@ in various programming environments.
 */
 package git
 
-import (
-	"fmt"
-)
-
 var (
 	// hooks is a map of Git hook names to their respective section of the
 	// Git hooks documentation site.
@@ -81,13 +77,10 @@ func Hooks() map[string]string {
 }
 
 // CheckLangSupported reports if a specified language is supported for Git hooks.
-// Returns boolean and error if the language is not recognized.
-func CheckLangSupported(key string) (bool, error) {
-	if _, exist := supportedLangs[key]; !exist {
-		return false, fmt.Errorf("language not supported: %s", key)
-	}
+func CheckLangSupported(key string) bool {
+	_, exist := supportedLangs[key]
 
-	return true, nil
+	return exist
 }
 
 // SupportedLangs returns the map of supported programming languages for Git hooks.
