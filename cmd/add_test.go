@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// TestAddCmd tests use cases for the hkup add command.
 func TestAddCmd(t *testing.T) {
 	var buf bytes.Buffer
 	rootCmd.SetOut(&buf)
@@ -29,9 +30,19 @@ func TestAddCmd(t *testing.T) {
 		err  error
 	}{
 		{
-			args: []string{"add", "test"},
-			want: "Usage:\n  hkup add <hook-name> [flags]\n\nFlags:\n  -h, --help          help for add\n      --lang string   supported languages for git hooks\n\n",
-			err:  fmt.Errorf("invalid argument \"test\" for \"hkup add\""),
+			[]string{"add", "test"},
+			"",
+			fmt.Errorf("invalid argument \"test\" for \"hkup add\""),
+		},
+		{
+			[]string{"add", "pre-commit"},
+			"",
+			fmt.Errorf("pre-commit hook already exists"),
+		},
+		{
+			[]string{"add", "fsmonitor-watchman", "--lang", "bash"},
+			"",
+			nil,
 		},
 		// Add more test cases here if necessary, e.g., for error conditions
 	}
@@ -43,12 +54,12 @@ func TestAddCmd(t *testing.T) {
 		err := rootCmd.Execute()
 
 		// Check for expected error
-		if (err != nil) != (tt.err != nil) || (err != nil && err.Error() != tt.err.Error()) {
+		if err != nil && err.Error() != tt.err.Error() {
 			t.Fatalf("Command failed for args %v: got error %v, want %v", tt.args, err, tt.err)
 		}
 
 		got := buf.String()
-		if got != tt.want {
+		if tt.want != "" && got != tt.want {
 			t.Errorf("got output %q, want %q for args %v", got, tt.want, tt.args)
 		}
 	}

@@ -1,5 +1,7 @@
 /*
-Package cmd initializes all commands (including root command) for the HkUp CLI.
+Package cmd initializes root hkup command and all of it's subcommands for HkUp CLI.
+
+Additionally, the cmd package also hold all test for the commands mentioned above.
 */
 package cmd
 
