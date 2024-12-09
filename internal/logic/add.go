@@ -35,8 +35,8 @@ func Add(cmd *cobra.Command, args []string) error {
 	// Uses the specified language from lang flag; else default to sh
 	if LangFlg != "" {
 		// make sure lang is supported
-		if _, err := git.CheckLangSupported(LangFlg); err != nil {
-			return err
+		if isValid := git.CheckLangSupported(LangFlg); !isValid {
+			return fmt.Errorf("language not supported: %s", LangFlg)
 		}
 		fileContent = fmt.Sprintf("#!/usr/bin/env %s\n\n\n\n\n", LangFlg)
 	} else {

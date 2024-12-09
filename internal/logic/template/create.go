@@ -179,8 +179,8 @@ func displayPrompt(templatePath string, arg ...string) error {
 
 		// Takes language if lang flag used or asks for it
 		if TemplateLangFlg != "" {
-			if _, err = git.CheckLangSupported(TemplateLangFlg); err != nil {
-				return err
+			if isValid := git.CheckLangSupported(TemplateLangFlg); !isValid {
+				return fmt.Errorf("language not supported: %s", TemplateLangFlg)
 			}
 			template.lang = TemplateLangFlg
 		} else if err = displayLangPrompt(); err != nil {
@@ -259,7 +259,7 @@ func displayLangPrompt() error {
 		return nil
 	default:
 		// Recursively calls this function until supplied with supported language
-		if _, err = git.CheckLangSupported(in); err != nil {
+		if isValid := git.CheckLangSupported(in); !isValid {
 			fmt.Println("Not a supported language. Please try again")
 			return displayLangPrompt()
 		}

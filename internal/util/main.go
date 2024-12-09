@@ -207,7 +207,7 @@ func GetINIValue(key string) (string, error) {
 	filePath := GetConfigFilePath()
 	file, err := os.Open(filePath)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	defer file.Close()
 
