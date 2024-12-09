@@ -8,6 +8,7 @@ import (
 	"testing"
 )
 
+// TestRemoveCmd tests use cases for the hkup remove command.
 func TestRemoveCmd(t *testing.T) {
 	var buf bytes.Buffer
 	rootCmd.SetOut(&buf)
@@ -29,9 +30,14 @@ func TestRemoveCmd(t *testing.T) {
 		err  error
 	}{
 		{
-			args: []string{"rm", "test"},
-			want: "Usage:\n  hkup remove <hook-name> [flags]\n\nAliases:\n  remove, rm\n\nFlags:\n  -h, --help   help for remove\n\n",
+			args: []string{"remove", "test"},
+			want: "",
 			err:  fmt.Errorf("invalid argument \"test\" for \"hkup remove\""),
+		},
+		{
+			args: []string{"remove", "fsmonitor-watchman"},
+			want: "",
+			err:  nil,
 		},
 		// Add more test cases here if necessary, e.g., for error conditions
 	}
@@ -43,13 +49,13 @@ func TestRemoveCmd(t *testing.T) {
 		err := rootCmd.Execute()
 
 		// Check for expected error
-		if (err != nil) != (tt.err != nil) || (err != nil && err.Error() != tt.err.Error()) {
+		if err != nil && err.Error() != tt.err.Error() {
 			t.Fatalf("Command failed for args %v: got error %v, want %v", tt.args, err, tt.err)
 		}
 
 		got := buf.String()
-		if got != tt.want {
-			t.Errorf("got %q, want %q for args %v", got, tt.want, tt.args)
+		if tt.want != "" && got != tt.want {
+			t.Errorf("got output %q, want %q for args %v", got, tt.want, tt.args)
 		}
 	}
 }

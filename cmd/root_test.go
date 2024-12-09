@@ -3,26 +3,13 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"os"
-	"path/filepath"
 	"testing"
 )
 
-// TestInitCmd tests use cases for the hkup init command.
-func TestInitCmd(t *testing.T) {
+// TestRootCmd tests use cases for the root hkup command.
+func TestRootCmd(t *testing.T) {
 	var buf bytes.Buffer
 	rootCmd.SetOut(&buf)
-
-	// Change directory to the parent
-	originalDir, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("could not get current working directory: %v", err)
-	}
-	defer os.Chdir(originalDir) // Restore original directory after test
-
-	if err := os.Chdir(filepath.Join(originalDir, "..")); err != nil {
-		t.Fatalf("could not change to parent directory: %v", err)
-	}
 
 	tests := []struct {
 		args []string
@@ -30,14 +17,9 @@ func TestInitCmd(t *testing.T) {
 		err  error
 	}{
 		{
-			args: []string{"init"},
+			args: []string{"--", "echo", "hello"},
 			want: "",
-			err:  fmt.Errorf("hooksPath already set to .hkup\n"),
-		},
-		{
-			args: []string{"init", "test"},
-			want: "",
-			err:  fmt.Errorf("unknown command \"test\" for \"hkup init\""),
+			err:  fmt.Errorf("chdir hello: no such file or directory"),
 		},
 		// Add more test cases here if necessary, e.g., for error conditions
 	}

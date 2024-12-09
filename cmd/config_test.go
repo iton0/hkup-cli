@@ -8,8 +8,9 @@ import (
 	"testing"
 )
 
-// TestInitCmd tests use cases for the hkup init command.
-func TestInitCmd(t *testing.T) {
+// TODO: update after finalizing configuration settings
+// TestConfigCmd tests use cases for the hkup config command.
+func TestConfigCmd(t *testing.T) {
 	var buf bytes.Buffer
 	rootCmd.SetOut(&buf)
 
@@ -30,14 +31,14 @@ func TestInitCmd(t *testing.T) {
 		err  error
 	}{
 		{
-			args: []string{"init"},
+			args: []string{"config", "get"},
 			want: "",
-			err:  fmt.Errorf("hooksPath already set to .hkup\n"),
+			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
 		},
 		{
-			args: []string{"init", "test"},
+			args: []string{"config", "set"},
 			want: "",
-			err:  fmt.Errorf("unknown command \"test\" for \"hkup init\""),
+			err:  fmt.Errorf("accepts 2 arg(s), received 0"),
 		},
 		// Add more test cases here if necessary, e.g., for error conditions
 	}
@@ -49,7 +50,7 @@ func TestInitCmd(t *testing.T) {
 		err := rootCmd.Execute()
 
 		// Check for expected error
-		if err.Error() != tt.err.Error() && err != nil {
+		if err != nil && err.Error() != tt.err.Error() {
 			t.Fatalf("Command failed for args %v: got error %v, want %v", tt.args, err, tt.err)
 		}
 
