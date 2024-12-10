@@ -65,7 +65,7 @@ func doesTemplateExist(templatePath, name string) (string, error) {
 }
 
 // performCopy copies the template file to the current working directory with
-// appropiate git hook name.
+// appropriate git hook name.
 //
 // Returns error if:
 //   - template does not follow naming convetion

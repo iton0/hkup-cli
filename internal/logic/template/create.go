@@ -139,7 +139,7 @@ func createTemplate(templatePath string) error {
 	return nil
 }
 
-// displayPrompt outputs appropiate prompts based on args and flags of command.
+// displayPrompt outputs appropriate prompts based on args and flags of command.
 // Returns error if issue with displaying any of the sub prompts.
 func displayPrompt(templatePath string, arg ...string) error {
 	fmt.Println() // Makes the output more distinct in regards to spacing
@@ -245,7 +245,7 @@ func displayCwdPrompt() error {
 }
 
 // displayLangPrompt asks what language to use for template.
-// Returns error if is issue with reading reponse.
+// Returns error if is issue with reading response.
 func displayLangPrompt() error {
 	// Does not display if we are using the existing git hook in cwd
 	if template.useCwd {
@@ -292,7 +292,7 @@ func displayNamePrompt(templatePath string) error {
 
 // displayCopyPrompt asks whether to copy the template to the current working
 // directory.
-// Returns an error if issue with reading reponse.
+// Returns an error if issue with reading response.
 func displayCopyPrompt() error {
 	isYes, err := util.YesNoPrompt("Copy to current working directory?")
 	if err != nil {
@@ -305,7 +305,7 @@ func displayCopyPrompt() error {
 }
 
 // displayEditPrompt asks whether to edit the created template.
-// Returns an error if issue with reading reponse.
+// Returns an error if issue with reading response.
 func displayEditPrompt() error {
 	isYes, err := util.YesNoPrompt("Edit template?")
 	if err != nil {

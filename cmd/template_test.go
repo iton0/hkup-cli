@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-// TODO: update this test function appropiately
+// TODO: update this test function appropriately
 // TestTemplateCmd tests use cases for the hkup template command.
 func TestTemplateCmd(t *testing.T) {
 	var buf bytes.Buffer

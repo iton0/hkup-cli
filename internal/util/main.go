@@ -188,7 +188,7 @@ func YesNoPrompt(prompt string) (bool, error) {
 
 // UserInputPrompt prompts the user with the specified message and waits for
 // the user to enter a response.
-// Returns reponse and error if issue occurred during the input process.
+// Returns response and error if issue occurred during the input process.
 func UserInputPrompt(prompt string) (string, error) {
 	fmt.Print(prompt + " ")
 
