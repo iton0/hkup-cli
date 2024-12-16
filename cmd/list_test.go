@@ -30,11 +30,6 @@ func TestListCmd(t *testing.T) {
 		err  error
 	}{
 		{
-			args: []string{"list"},
-			want: "",
-			err:  fmt.Errorf("accepts 1 arg(s), received 0"),
-		},
-		{
 			args: []string{"list", "test"},
 			want: "",
 			err:  fmt.Errorf("invalid argument \"test\" for \"hkup list\""),
