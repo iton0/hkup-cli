@@ -42,7 +42,7 @@ func Init(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("must run \"hkup init\" inside a worktree")
 	}
 
-	var gitCmd []string    // Holds everything after the root git command
+	gitCmd := []string{}   // Holds everything after the root git command
 	var hkupDirPath string // Holds the path the .hkup directory
 
 	// If both flags are set, configure core.hooksPath with their values.

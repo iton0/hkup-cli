@@ -6,10 +6,19 @@ import (
 )
 
 var listCmd = &cobra.Command{
-	Use:       "list {hook|lang}",
-	Short:     "List git hooks information",
-	ValidArgs: []string{"hook", "lang"},
-	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
+	Use:   "list [hook|lang|template]",
+	Short: "List git hooks information",
+	Long: `List git hooks information for the specified category.
+
+If no arguments are provided, this command will display the hooks used
+in the current working directory.
+
+Valid arguments:
+- hook:     Displays supported git hooks.
+- lang:     Displays supported languages used for hooks.
+- template: Displays user-defined templates.`,
+	ValidArgs: []string{"hook", "lang", "template"},
+	Args:      cobra.MatchAll(cobra.MaximumNArgs(1), cobra.OnlyValidArgs),
 	RunE:      logic.List,
 }
 
