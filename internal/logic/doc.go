@@ -18,10 +18,9 @@ import (
 //   - error if the hook key is invalid, if the platform is unsupported, or if
 //     there is an issue starting the command.
 func Doc(cmd *cobra.Command, args []string) error {
-	// URL section of specified hook
-	hook := git.GetHookUrl(args[0])
+	// Full url path for the specified git hook
+	url := "https://git-scm.com/docs/githooks#" + git.GetHookUrl(args[0])
 
-	url := "https://git-scm.com/docs/githooks#" + hook // Full url path for the specified git hook
 	var termCmd *exec.Cmd
 
 	switch runtime.GOOS {
