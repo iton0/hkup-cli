@@ -13,26 +13,18 @@ import (
 //
 // Returns error if issue with cloning repository or initializing HkUp.
 func Root(cmd *cobra.Command, args []string) error {
-	root := args[0]
-
 	// Tries to run git command in the terminal
-	err := util.RunCommandInTerminal(root, args[1:]...)
+	err := util.RunCommandInTerminal(args[0], args[1:]...)
 	if err != nil {
 		return err
 	}
 
-	secondLast := args[len(args)-2]
-	dir := args[len(args)-1]
-	var isBare bool
+	secondLast := args[len(args)-2] // Second last arg that user provided
+	dir := args[len(args)-1]        // Last arg; assume it is the directory
+	var isBare bool                 // Boolean whether directory is bare
 
-	// Checks if the cloned repository is bare
-	for _, v := range args[1:] {
-		if v == "--bare" {
-			isBare = true
-		}
-	}
-
-	if err = cdLogic(root, secondLast, dir, isBare); err != nil {
+	// Tries to cd into the created directory and updates the isBare variable
+	if isBare, err = cdLogic(secondLast, dir); err != nil {
 		return err
 	}
 
@@ -66,28 +58,46 @@ func Root(cmd *cobra.Command, args []string) error {
 }
 
 // cdLogic implements the HkUp wrapper logic around git-related clone command.
-// Returns error if issue with changing directory.
-func cdLogic(root, secondLast, dir string, isBare bool) error {
+// Returns:
+//   - boolean of if directory is bare
+//   - error if issue with changing directory
+func cdLogic(secondLast, dir string) (bool, error) {
 	// Gets the remote repository name if no custom clone name is used
 	// ex). Not Custom: git clone <url>
 	//      Custom: git clone <url> foo
-	switch root {
-	case "git", "/usr/bin/git":
-		if isBare && strings.HasSuffix(dir, ".git") {
-			start := strings.LastIndex(dir, "/") + 1
-			dir = dir[start:]
-		} else if strings.HasSuffix(dir, ".git") {
-			start := strings.LastIndex(dir, "/") + 1
+
+	// Holds the boolean whether directory is bare or not
+	var isBare bool
+
+	// Using the regular 'git' command
+	if strings.HasSuffix(dir, ".git") { // bare
+		start := strings.LastIndex(dir, "/") + 1
+		dir = dir[start:]
+
+		// If the repo is not bare then updates the directory name ie regular clone
+		if isBare = isBareRepo(dir); !isBare {
 			end := strings.LastIndex(dir, ".git")
 			dir = dir[start:end]
 		}
-	case "gh", "usr/bin/gh":
-		if strings.Count(secondLast, "/") != 1 {
-			start := strings.LastIndex(dir, "/") + 1
-			dir = dir[start:]
-		}
+	} else if strings.Count(secondLast, "/") != 1 { // When using Github CLI
+		start := strings.LastIndex(dir, "/") + 1
+		dir = dir[start:]
 	}
 
 	// Either successful or returns error if issue with changing directory
-	return os.Chdir(dir)
+	return isBare, os.Chdir(dir)
+}
+
+// isBareRepo reports if given directory (dir) is a bare git repository.
+func isBareRepo(dir string) bool {
+	// Checks if current working directory is git bare repo
+	out, err := exec.Command("git", "-C", dir, "rev-parse", "--is-bare-repository").Output()
+	if err != nil {
+		return false
+	}
+
+	// Returns error if current working directory is not a worktree
+	result := strings.TrimSpace(string(out))
+
+	return result == "true"
 }
