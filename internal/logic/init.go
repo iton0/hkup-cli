@@ -35,7 +35,7 @@ func Init(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Current working directory is not a worktree so returns error
+	// Returns error if current working directory is not a worktree
 	result := strings.TrimSpace(string(out))
 	// If the WorkTree flag is used cwd does not need to be a git worktree
 	if result == "false" && WorkTreeFlg == "" {
