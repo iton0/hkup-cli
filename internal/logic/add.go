@@ -34,21 +34,23 @@ func Add(cmd *cobra.Command, args []string) error {
 
 	// Uses the specified language from lang flag; else default to sh
 	if LangFlg != "" {
-		// make sure lang is supported
+		// Makes sure lang is supported
 		if isValid := git.CheckLangSupported(LangFlg); !isValid {
 			return fmt.Errorf("language not supported: %s", LangFlg)
 		}
-		fileContent = fmt.Sprintf("#!/usr/bin/env %s\n\n\n\n\n", LangFlg)
+		fileContent = fmt.Sprintf("#!/usr/bin/env %s", LangFlg)
 	} else {
-		fileContent = "#!/bin/sh\n\n\n\n\n"
+		fileContent = "#!/bin/sh"
 	}
 
+	// Creates the git hook file
 	file, err := util.CreateFile(filePath)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
+	// Write the language shebang line to the created file from above
 	_, err = file.WriteString(fileContent)
 	if err != nil {
 		return err

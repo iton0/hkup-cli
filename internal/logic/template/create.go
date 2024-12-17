@@ -52,7 +52,7 @@ func Create(cmd *cobra.Command, args []string) error {
 	configPath := util.GetConfigDirPath()
 	templatePath := util.GetTemplateDirPath()
 
-	// Make the HkUp config directory if it does not exist
+	// Makes the HkUp config directory if it does not exist
 	if !util.DoesDirectoryExist(configPath) {
 		cmd.Printf("Making HkUp config directory at %s...\n", configPath)
 
@@ -61,7 +61,7 @@ func Create(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		// Also make the template subdirectory
+		// Also makes the template subdirectory
 		err = util.CreateDirectory(templatePath)
 		if err != nil {
 			return err
@@ -95,24 +95,28 @@ func createTemplate(templatePath string) error {
 		return util.CopyFile(srcPath, createdTemplate) // returns either nil or error
 	}
 
+	// Creates the template file
 	file, err := util.CreateFile(createdTemplate)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
+	// Gets language to use for template
 	var fileContent string
 	if template.lang == "" { // Default to sh for the template language
-		fileContent = "#!/bin/sh\n\n\n\n\n"
+		fileContent = "#!/bin/sh"
 	} else {
-		fileContent = fmt.Sprintf("#!/usr/bin/env %s\n\n\n\n\n", template.lang)
+		fileContent = fmt.Sprintf("#!/usr/bin/env %s", template.lang)
 	}
 
+	// Writes the shebang for the template language
 	_, err = file.WriteString(fileContent)
 	if err != nil {
 		return err
 	}
 
+	// Opens template file in editor
 	if template.edit {
 		if err := editTemplate(createdTemplate); err != nil {
 			return err
@@ -120,6 +124,7 @@ func createTemplate(templatePath string) error {
 		fmt.Println("Template successfully edited!")
 	}
 
+	// Copies the template file and makes it executable
 	if template.copyHook {
 		dstPath := filepath.Join(util.HkupDirName, template.hook)
 
@@ -208,8 +213,17 @@ func displayPrompt(templatePath string, arg ...string) error {
 }
 
 // displayHookPrompt asks for valid git hook name to use for template.
-// Returns error if issue with reading response.
-func displayHookPrompt() error {
+// Returns error if issue with reading response or after 3 incorrect attempts.
+func displayHookPrompt(attempts ...int) error {
+	if len(attempts) == 0 {
+		attempts = append(attempts, 0)
+	}
+
+	attempt := attempts[0]
+	if attempt == 3 {
+		return fmt.Errorf("3 incorrect attempts")
+	}
+
 	in, err := util.UserInputPrompt("Git hook name:")
 	if err != nil {
 		return err
@@ -217,8 +231,9 @@ func displayHookPrompt() error {
 
 	// Recursively calls this function until supplied with supported git hook
 	if out := git.GetHookUrl(in); out == "" {
+		attempt++
 		fmt.Println("Not a supported Git hook. Please try again")
-		return displayHookPrompt()
+		return displayHookPrompt(attempt)
 	}
 
 	template.hook = in
@@ -227,7 +242,7 @@ func displayHookPrompt() error {
 
 // displayCwdPrompt asks whether to use current working directory's git hook as
 // template.
-// Returns error if issue with reading response.
+// Returns error if issue with reading response or after 3 incorrect attempts.
 func displayCwdPrompt() error {
 	// Does not display if the git hook type does not exist in the cwd
 	if !util.DoesFileExist(filepath.Join(util.HkupDirName, template.hook)) {
@@ -245,8 +260,17 @@ func displayCwdPrompt() error {
 }
 
 // displayLangPrompt asks what language to use for template.
-// Returns error if is issue with reading response.
-func displayLangPrompt() error {
+// Returns error if issue with reading response or after 3 incorrect attempts.
+func displayLangPrompt(attempts ...int) error {
+	if len(attempts) == 0 {
+		attempts = append(attempts, 0)
+	}
+
+	attempt := attempts[0]
+	if attempt == 3 {
+		return fmt.Errorf("3 incorrect attempts")
+	}
+
 	// Does not display if we are using the existing git hook in cwd
 	if template.useCwd {
 		return nil
@@ -260,8 +284,9 @@ func displayLangPrompt() error {
 	default:
 		// Recursively calls this function until supplied with supported language
 		if isValid := git.CheckLangSupported(in); !isValid {
+			attempt++
 			fmt.Println("Not a supported language. Please try again")
-			return displayLangPrompt()
+			return displayLangPrompt(attempt)
 		}
 
 		template.lang = in
@@ -273,7 +298,17 @@ func displayLangPrompt() error {
 // Returns error if:
 //   - issue with reading response
 //   - issue with checking config template directory
-func displayNamePrompt(templatePath string) error {
+//   - 3 incorrect name attempts
+func displayNamePrompt(templatePath string, attempts ...int) error {
+	if len(attempts) == 0 {
+		attempts = append(attempts, 0)
+	}
+
+	attempt := attempts[0]
+	if attempt == 3 {
+		return fmt.Errorf("3 incorrect attempts")
+	}
+
 	in, err := util.UserInputPrompt("Template Name:")
 	if err != nil {
 		return err
@@ -282,8 +317,9 @@ func displayNamePrompt(templatePath string) error {
 	if out, err := doesTemplateExist(templatePath, in); err != nil {
 		return err
 	} else if out != "" { // Keeps asking until given a unique template name
+		attempt++
 		fmt.Println("Template name already exists. Please try again")
-		return displayNamePrompt(templatePath)
+		return displayNamePrompt(templatePath, attempt)
 	}
 
 	template.name = in
