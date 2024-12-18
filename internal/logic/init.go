@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"github.com/iton0/hkup-cli/internal/util"
 	"github.com/spf13/cobra"
@@ -19,29 +18,20 @@ var (
 	// WorkTreeFlg is an optional flag that defines the location of the working tree
 	// of a local git repository.
 	WorkTreeFlg string
+
+	// ForceFlg is an optional flag which will override the local hooksPath
+	// variable if it is already set.
+	ForceFlg bool
 )
 
 // Init sets the .hkup directory for storing Git hooks in the current repository.
 //
 // Returns error if:
-//   - current working directory is not a git repository/worktree
+//   - current working directory is not a regular or bare git repository
 //   - issue with creating .hkup directory
 //   - hooksPath is already set
 //   - issue with setting the hooksPath
 func Init(cmd *cobra.Command, args []string) error {
-	// Checks if current working directory is git worktree
-	out, err := exec.Command("git", "-C", ".", "rev-parse", "--is-inside-work-tree").Output()
-	if err != nil {
-		return err
-	}
-
-	// Returns error if current working directory is not a worktree
-	result := strings.TrimSpace(string(out))
-	// If the WorkTree flag is used cwd does not need to be a git worktree
-	if result == "false" && WorkTreeFlg == "" {
-		return fmt.Errorf("must run \"hkup init\" inside a worktree")
-	}
-
 	gitCmd := []string{}   // Holds everything after the root git command
 	var hkupDirPath string // Holds the path the .hkup directory
 
@@ -55,18 +45,13 @@ func Init(cmd *cobra.Command, args []string) error {
 		gitCmd = []string{"config", "--local", "core.hooksPath", hkupDirPath}
 	}
 
-	// Tries to create the .hkup directory if it does not exist
-	if !util.DoesDirectoryExist(hkupDirPath) {
-		if err = util.CreateDirectory(hkupDirPath); err != nil {
-			return err
+	// Does not override the hooksPath variable if already set and force flag is
+	// not used
+	if !ForceFlg {
+		out, _ := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput()
+		if len(out) != 0 {
+			return fmt.Errorf("hooksPath already set to %s", out)
 		}
-
-		cmd.Printf("Initialized hkup directory at %s\n", hkupDirPath)
-	}
-
-	// Does not override the hooksPath variable if already set
-	if out, _ := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput(); len(out) != 0 {
-		return fmt.Errorf("hooksPath already set to %s", out)
 	}
 
 	return exec.Command("git", gitCmd...).Run()
