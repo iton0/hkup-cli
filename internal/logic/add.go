@@ -17,9 +17,19 @@ var LangFlg string
 //
 // Returns error if any of the steps fail above.
 func Add(cmd *cobra.Command, args []string) error {
-	// Makes sure .hkup directory exists in current working directory
-	if !util.DoesDirectoryExist(util.HkupDirName) {
-		return fmt.Errorf("%s directory does not exist", util.HkupDirName)
+	isBare, err := isBareRepo(".")
+	if err != nil { // Current working directory is not a git repository at all
+		return err
+	}
+
+	// Tries to create .hkup directory if it does not exist and current working
+	// directory is not a bare git repository
+	if !util.DoesDirectoryExist(util.HkupDirName) && !isBare {
+		if err := util.CreateDirectory(util.HkupDirName); err != nil {
+			return err
+		}
+
+		cmd.Printf("Initialized hkup directory at %s\n", util.HkupDirName)
 	}
 
 	hook := args[0]
@@ -30,7 +40,7 @@ func Add(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("%s hook already exists", hook)
 	}
 
-	var fileContent string
+	var sheBangLine string
 
 	// Uses the specified language from lang flag; else default to sh
 	if LangFlg != "" {
@@ -38,9 +48,9 @@ func Add(cmd *cobra.Command, args []string) error {
 		if isValid := git.CheckLangSupported(LangFlg); !isValid {
 			return fmt.Errorf("language not supported: %s", LangFlg)
 		}
-		fileContent = fmt.Sprintf("#!/usr/bin/env %s", LangFlg)
+		sheBangLine = fmt.Sprintf("#!/usr/bin/env %s", LangFlg)
 	} else {
-		fileContent = "#!/bin/sh"
+		sheBangLine = "#!/bin/sh"
 	}
 
 	// Creates the git hook file
@@ -50,8 +60,8 @@ func Add(cmd *cobra.Command, args []string) error {
 	}
 	defer file.Close()
 
-	// Write the language shebang line to the created file from above
-	_, err = file.WriteString(fileContent)
+	// Writes the language shebang line to the created file from above
+	_, err = file.WriteString(sheBangLine)
 	if err != nil {
 		return err
 	}
