@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.4.0](https://github.com/iton0/hkup-cli/compare/v0.3.1...v0.4.0) (2024-12-18)
+
+
+### Features
+
+* **add:** initialize .hkup directory ([974762f](https://github.com/iton0/hkup-cli/commit/974762f53f504e9495ae4f8500009f7548a1cef8))
+* improve list subcommand ([f2cdd16](https://github.com/iton0/hkup-cli/commit/f2cdd16438dd51f50df06fb837ad1dcdfc0e6238))
+* **init:** add '--force' flag ([0a8e499](https://github.com/iton0/hkup-cli/commit/0a8e499a5296df2215a582d3752332afba02fa8c))
+
+
+### Bug Fixes
+
+* **internal/root:** make Root function more robust ([f5d36b3](https://github.com/iton0/hkup-cli/commit/f5d36b378e3450d3af79897d8beb08d21a53dd99))
+* **root:** simplify internal root logic ([5b1a7d0](https://github.com/iton0/hkup-cli/commit/5b1a7d0c1f52c65dc18e2e085b9ac9cf9362edef))
+
 ## [0.3.1](https://github.com/iton0/hkup-cli/compare/v0.3.0...v0.3.1) (2024-12-05)
 
 
