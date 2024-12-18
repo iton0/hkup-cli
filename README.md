@@ -120,7 +120,5 @@ hkup template remove <template-name>
 ## Roadmap to v1.0.0
 1. ~~windows support~~
 2. ~~wrapper for git & gh clone~~
-3. HkUp logo (may or may not keep this one)
-4. better test coverage
-5. Allow users to create, store, and share templates. Users can fetch these templates over internet (may need to make another repo for this).
-6. Finalize HkUp configuration settings and make config subcommand visible
+3. HkUp logo (Expected by end of January)
+4. Finalize HkUp configuration settings and make config subcommand visible
