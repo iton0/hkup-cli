@@ -14,6 +14,7 @@ var initCmd = &cobra.Command{
 }
 
 func init() {
+	initCmd.Flags().BoolVarP(&logic.ForceFlg, "force", "f", false, "override local hooksPath variable")
 	initCmd.Flags().StringVar(&logic.GitDirFlg, "gitdir", "", "specified path to git directory")
 	initCmd.Flags().StringVar(&logic.WorkTreeFlg, "worktree", "", "specified path to working tree")
 	initCmd.MarkFlagsRequiredTogether("gitdir", "worktree")
