@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// List displays a list of one of the below based on provided arguement:
+// List displays a list of one of the below based on provided argument:
 //   - Supported git hooks
 //   - Supported languages
 //   - User-defined git hook templates
