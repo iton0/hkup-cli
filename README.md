@@ -108,7 +108,7 @@ hkup template copy <template-name>
 ```sh
 hkup template edit <template-name>
 ```
->[!CAUTION]
+> [!CAUTION]
 > Editing a template will not update its copies.
 
 **Remove a template**:
