@@ -50,7 +50,7 @@ func cdLogic(possibleRepoUrl, possibleCustomDir string) error {
 	// Starting index of the remote repo name
 	start := strings.LastIndex(possibleCustomDir, "/") + 1
 
-	var createdDir string // Holds the name of the cloned directory
+	createdDir := possibleCustomDir // Holds the name of the cloned directory
 
 	if usedDefaultGit {
 		if isBare, _ := isBareRepo(possibleCustomDir[start:]); isBare {
