@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/iton0/hkup-cli/compare/v0.4.0...v0.4.1) (2024-12-21)
+
+
+### Bug Fixes
+
+* **internal/logic/root:** resolve gh command issue ([bb210d1](https://github.com/iton0/hkup-cli/commit/bb210d1941dab8171772eb8b82b607a24a8a6446))
+
 ## [0.4.0](https://github.com/iton0/hkup-cli/compare/v0.3.1...v0.4.0) (2024-12-18)
 
 
