@@ -8,11 +8,8 @@ import (
 )
 
 var (
-	// version holds the centralized version of HkUp.
-	// It is updated to the latest release version at build time of the binaries.
-	//
-	// INFO: look at the .github/workflows/release-please.yml to view how version
-	//       is updated.
+	// NOTE: Updated to the latest release version at build time of the binaries
+	//       via .github/workflows/release-please.yml
 	version = "dev"
 
 	rootCmd = &cobra.Command{
@@ -35,8 +32,8 @@ func init() {
 	rootCmd.AddCommand(listCmd)
 }
 
-// Execute serves as a wrapper for the Cobra API's Execute function,
-// allowing it to be called from the [github.com/iton0/hkup-cli] package.
+// Execute serves as a wrapper for the Cobra API's Execute function, allowing it
+// to be called from the [github.com/iton0/hkup-cli] package.
 func Execute() {
 	rootCmd.Execute()
 }

@@ -14,9 +14,10 @@ import (
 // It constructs the URL for the documentation based on the hook name and attempts
 // to open it using the appropriate command for the operating system.
 //
-// Returns:
-//   - error if the hook key is invalid, if the platform is unsupported, or if
-//     there is an issue starting the command.
+// Returns error if:
+//   - hook key is invalid
+//   - platform is unsupported
+//   - issue starting the command
 func Doc(cmd *cobra.Command, args []string) error {
 	// Full url path for the specified git hook
 	url := "https://git-scm.com/docs/githooks#" + git.GetHookUrl(args[0])
@@ -38,6 +39,5 @@ func Doc(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	// Must be called after successfully starting terminal command above
-	return termCmd.Wait() // Returns error if command fails
+	return termCmd.Wait()
 }

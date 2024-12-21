@@ -4,7 +4,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// RootCmd is the template command that will be added to the root HkUp command.
+// RootCmd is the root template subcommand that will be added to the root HkUp
+// command.
 var RootCmd = &cobra.Command{
 	Use:   "template",
 	Short: "Reusable Git hook",

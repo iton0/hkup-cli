@@ -52,7 +52,6 @@ func Create(cmd *cobra.Command, args []string) error {
 	configPath := util.GetConfigDirPath()
 	templatePath := util.GetTemplateDirPath()
 
-	// Makes the HkUp config directory if it does not exist
 	if !util.DoesDirectoryExist(configPath) {
 		cmd.Printf("Making HkUp config directory at %s...\n", configPath)
 
@@ -61,7 +60,6 @@ func Create(cmd *cobra.Command, args []string) error {
 			return err
 		}
 
-		// Also makes the template subdirectory
 		err = util.CreateDirectory(templatePath)
 		if err != nil {
 			return err
@@ -72,12 +70,10 @@ func Create(cmd *cobra.Command, args []string) error {
 		if err := displayPrompt(templatePath, args[0]); err != nil {
 			return err
 		}
-	} else if err := displayPrompt(templatePath); err != nil { // no args given
+	} else if err := displayPrompt(templatePath); err != nil {
 		return err
 	}
 
-	// Either creating the template is successful and returns nil or unsuccessful
-	// and returns error
 	return createTemplate(templatePath)
 }
 
@@ -86,49 +82,42 @@ func Create(cmd *cobra.Command, args []string) error {
 func createTemplate(templatePath string) error {
 	fmt.Println() // Makes the output more distinct in regards to spacing
 
-	// Full path to created template
-	createdTemplate := filepath.Join(templatePath, template.name+"#"+template.hook)
+	createdTemplateFullPath := filepath.Join(templatePath, template.name+"#"+template.hook)
 
-	// Copies git hook from current working directory to template directory
 	if template.useCwd {
 		srcPath := util.GetHookFilePath(template.hook)
-		return util.CopyFile(srcPath, createdTemplate) // returns either nil or error
+		return util.CopyFile(srcPath, createdTemplateFullPath)
 	}
 
-	// Creates the template file
-	file, err := util.CreateFile(createdTemplate)
+	file, err := util.CreateFile(createdTemplateFullPath)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	// Gets language to use for template
 	var fileContent string
-	if template.lang == "" { // Default to sh for the template language
+	if template.lang == "" {
 		fileContent = "#!/bin/sh"
 	} else {
 		fileContent = fmt.Sprintf("#!/usr/bin/env %s", template.lang)
 	}
 
-	// Writes the shebang for the template language
 	_, err = file.WriteString(fileContent)
 	if err != nil {
 		return err
 	}
 
-	// Opens template file in editor
 	if template.edit {
-		if err := editTemplate(createdTemplate); err != nil {
+		if err := editTemplate(createdTemplateFullPath); err != nil {
 			return err
 		}
 		fmt.Println("Template successfully edited!")
 	}
 
-	// Copies the template file and makes it executable
 	if template.copyHook {
 		dstPath := filepath.Join(util.HkupDirName, template.hook)
 
-		err := util.CopyFile(createdTemplate, dstPath)
+		err := util.CopyFile(createdTemplateFullPath, dstPath)
 		if err != nil {
 			return err
 		}
@@ -149,7 +138,6 @@ func createTemplate(templatePath string) error {
 func displayPrompt(templatePath string, arg ...string) error {
 	fmt.Println() // Makes the output more distinct in regards to spacing
 
-	// Takes user provided arg as hook name or asks for it
 	if len(arg) == 1 {
 		template.hook = arg[0]
 		fmt.Printf("Creating template with %s hook...\n\n", template.hook)
@@ -157,7 +145,6 @@ func displayPrompt(templatePath string, arg ...string) error {
 		return err
 	}
 
-	// Takes name if name flag used or asks for it
 	if TemplateNameFlg != "" {
 		if out, err := doesTemplateExist(templatePath, TemplateNameFlg); err != nil {
 			return err
@@ -169,8 +156,6 @@ func displayPrompt(templatePath string, arg ...string) error {
 		return err
 	}
 
-	// Uses the current working directory's git hook if flag given or asks to do so
-	// NOTE: If cwd flag is used then utilizes language of that existing hook
 	if TemplateCwdFlg {
 		if !util.DoesFileExist(filepath.Join(util.HkupDirName, template.hook)) {
 			return fmt.Errorf("git hook %s does not exist in the current working directory", template.hook)
@@ -182,7 +167,6 @@ func displayPrompt(templatePath string, arg ...string) error {
 			return err
 		}
 
-		// Takes language if lang flag used or asks for it
 		if TemplateLangFlg != "" {
 			if isValid := git.CheckLangSupported(TemplateLangFlg); !isValid {
 				return fmt.Errorf("language not supported: %s", TemplateLangFlg)
@@ -192,16 +176,14 @@ func displayPrompt(templatePath string, arg ...string) error {
 			return err
 		}
 
-		// Copies created template to cwd if copy flag used or asks to do so
 		if TemplateCopyFlg {
 			template.copyHook = true
-		} else if !template.useCwd { // Does not copy what is already in cwd
+		} else if !template.useCwd {
 			if err = displayCopyPrompt(); err != nil {
 				return err
 			}
 		}
 
-		// Created template will be opened in editor or asks to do so
 		if TemplateEditFlg {
 			template.edit = true
 		} else if err = displayEditPrompt(); err != nil {
@@ -229,7 +211,6 @@ func displayHookPrompt(attempts ...int) error {
 		return err
 	}
 
-	// Recursively calls this function until supplied with supported git hook
 	if out := git.GetHookUrl(in); out == "" {
 		attempt++
 		fmt.Println("Not a supported Git hook. Please try again")
@@ -244,7 +225,6 @@ func displayHookPrompt(attempts ...int) error {
 // template.
 // Returns error if issue with reading response or after 3 incorrect attempts.
 func displayCwdPrompt() error {
-	// Does not display if the git hook type does not exist in the cwd
 	if !util.DoesFileExist(filepath.Join(util.HkupDirName, template.hook)) {
 		return nil
 	}
@@ -254,7 +234,6 @@ func displayCwdPrompt() error {
 		return err
 	}
 
-	// useCwd field is false by default so only need to check if "yes"
 	template.useCwd = isYes
 	return nil
 }
@@ -271,7 +250,6 @@ func displayLangPrompt(attempts ...int) error {
 		return fmt.Errorf("3 incorrect attempts")
 	}
 
-	// Does not display if we are using the existing git hook in cwd
 	if template.useCwd {
 		return nil
 	}
@@ -279,10 +257,9 @@ func displayLangPrompt(attempts ...int) error {
 	switch in, err := util.UserInputPrompt("Language (default sh):"); {
 	case err != nil:
 		return err
-	case in == "": // using the default sh as the language for the hook
+	case in == "":
 		return nil
 	default:
-		// Recursively calls this function until supplied with supported language
 		if isValid := git.CheckLangSupported(in); !isValid {
 			attempt++
 			fmt.Println("Not a supported language. Please try again")
@@ -316,7 +293,7 @@ func displayNamePrompt(templatePath string, attempts ...int) error {
 
 	if out, err := doesTemplateExist(templatePath, in); err != nil {
 		return err
-	} else if out != "" { // Keeps asking until given a unique template name
+	} else if out != "" {
 		attempt++
 		fmt.Println("Template name already exists. Please try again")
 		return displayNamePrompt(templatePath, attempt)
@@ -335,7 +312,6 @@ func displayCopyPrompt() error {
 		return err
 	}
 
-	// copyHook field is false by default so only need to check if "yes"
 	template.copyHook = isYes
 	return nil
 }
@@ -348,7 +324,6 @@ func displayEditPrompt() error {
 		return err
 	}
 
-	// edit field is false by default so only need to check if "yes"
 	template.edit = isYes
 	return nil
 }

@@ -97,13 +97,11 @@ func RunCommandInTerminal(root string, args ...string) error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 
-	// Starts the command
 	if err := cmd.Start(); err != nil {
 		return err
 	}
 
-	// Waits for the command to finish
-	return cmd.Wait() // Either success and returns nil or returns error if issue
+	return cmd.Wait()
 }
 
 // GetConfigFilePath returns the HkUp file path that holds configuration settings.
@@ -211,7 +209,6 @@ func GetINIValue(key string) (string, error) {
 	}
 	defer file.Close()
 
-	// Scanner to read the file line by line
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -246,14 +243,13 @@ func GetINIValue(key string) (string, error) {
 	if err := scanner.Err(); err != nil {
 		return "", err
 	}
-	return "", fmt.Errorf("%s is not a valid key", key) // Returns empty string if key not found
+	return "", fmt.Errorf("%s is not a valid key", key)
 }
 
 // SetINIValue modifies the value of a key in the config settings INI file.
 // Returns error if key not found or issue with reading or wriiting to file.
 func SetINIValue(key, newValue string) error {
 	filePath := GetConfigFilePath()
-	// Open the TOML file
 	file, err := os.Open(filePath)
 	if err != nil {
 		return err
@@ -261,7 +257,7 @@ func SetINIValue(key, newValue string) error {
 	defer file.Close()
 
 	updatedLines := []string{}
-	var keyFound bool // defaults to false
+	var keyFound bool
 
 	// Scanner to read the file line by line
 	scanner := bufio.NewScanner(file)

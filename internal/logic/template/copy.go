@@ -21,7 +21,6 @@ func Copy(cmd *cobra.Command, args []string) error {
 	configPath := util.GetConfigDirPath()
 	var templateName string
 
-	// Only starts the process of copying if config path and .hkup directory exist
 	switch {
 	case !util.DoesDirectoryExist(configPath):
 		return fmt.Errorf("%s directory does not exist", configPath)

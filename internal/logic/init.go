@@ -35,8 +35,6 @@ func Init(cmd *cobra.Command, args []string) error {
 	gitCmd := []string{}   // Holds everything after the root git command
 	var hkupDirPath string // Holds the path the .hkup directory
 
-	// If both flags are set, configure core.hooksPath with their values.
-	// Otherwise, use the default hooks directory (util.HkupDirName).
 	if GitDirFlg != "" && WorkTreeFlg != "" {
 		hkupDirPath = filepath.Join(WorkTreeFlg, util.HkupDirName)
 		gitCmd = []string{"--git-dir=" + GitDirFlg, "--work-tree=" + WorkTreeFlg, "config", "--local", "core.hooksPath", hkupDirPath}
@@ -45,8 +43,6 @@ func Init(cmd *cobra.Command, args []string) error {
 		gitCmd = []string{"config", "--local", "core.hooksPath", hkupDirPath}
 	}
 
-	// Does not override the hooksPath variable if already set and force flag is
-	// not used
 	if !ForceFlg {
 		out, _ := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput()
 		if len(out) != 0 {

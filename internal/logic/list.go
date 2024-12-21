@@ -19,7 +19,7 @@ import (
 func List(cmd *cobra.Command, args []string) error {
 	out := []string{}
 
-	if len(args) > 0 { // Gets appropriate output based on argument provided
+	if len(args) > 0 {
 		switch args[0] {
 		case "template":
 			out = getHookTemplates()
@@ -31,7 +31,7 @@ func List(cmd *cobra.Command, args []string) error {
 		case "lang":
 			out = util.ConvertMapKeysToSlice(git.SupportedLangs())
 		}
-	} else { // No args; gets hooks in current working directory
+	} else {
 		out = getCwdHooks()
 		if out == nil {
 			return fmt.Errorf("could not read .hkup directory")
@@ -53,8 +53,8 @@ func formatOutput(out []string) string {
 	return fout
 }
 
-// getHookTemplates returns all user-defined templates.
-// If no templates are found, returns a empty string slice.
+// getHookTemplates returns a slice of all user-defined template file names.
+// If no templates are found, returns a empty slice.
 func getHookTemplates() []string {
 	out := []string{}
 
