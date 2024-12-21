@@ -5,15 +5,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Get prints out the value of a specified configuration setting.
-//
-// Returns error if issue with getting the value.
+// Get prints out the value of a specified configuration setting. Returns error
+// if issue with getting the value.
 func Get(cmd *cobra.Command, args []string) error {
 	out, err := util.GetINIValue(args[0])
 	if err != nil {
 		return err
 	}
 
-	cmd.Println(out) // This may be empty if the value is not set but key is valid
+	cmd.Println(out)
 	return nil
 }
