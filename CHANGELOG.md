@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/iton0/hkup-cli/compare/v0.4.1...v0.4.2) (2024-12-21)
+
+
+### Bug Fixes
+
+* **internal/logic/root:** resolve issue in cdLogic function ([b48c032](https://github.com/iton0/hkup-cli/commit/b48c0329f7afdaa291be88faf6edba3b5d4a2f48))
+
 ## [0.4.1](https://github.com/iton0/hkup-cli/compare/v0.4.0...v0.4.1) (2024-12-21)
 
 
