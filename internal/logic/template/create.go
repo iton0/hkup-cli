@@ -28,7 +28,7 @@ var (
 	// TemplateEditFlg is an optional flag indicating to edit the template.
 	TemplateEditFlg bool
 
-	// template holds the information to create the new template.
+	// template is a pointer that holds the information to create a new template.
 	// Info includes:
 	//   - git hook name (hook)
 	//   - language (lang)
@@ -36,7 +36,7 @@ var (
 	//   - if to use git hook in the current working directory (useCwd)
 	//   - if to copy created template in the current working directory (copyHook)
 	//   - if to edit the created template by opening editor (edit)
-	template = struct {
+	template = &struct {
 		hook, lang, name       string
 		useCwd, copyHook, edit bool
 	}{}
