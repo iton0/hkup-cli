@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/iton0/hkup-cli/compare/v0.4.1...v0.4.2) (2024-12-27)
+
+
+### Performance Improvements
+
+* **internal/logic/template:** update template creation logic ([0f460cb](https://github.com/iton0/hkup-cli/commit/0f460cb18215e514199bf4ec926cc2a0836218f5))
+
 ## [0.4.1](https://github.com/iton0/hkup-cli/compare/v0.4.0...v0.4.1) (2024-12-21)
 
 
