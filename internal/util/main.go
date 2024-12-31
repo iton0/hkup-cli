@@ -26,10 +26,8 @@ import (
 	"strings"
 )
 
-const (
-	// HkupDirName defines HkUp directory name within current working directory.
-	HkupDirName = ".hkup"
-)
+// HkupDirName defines HkUp directory name within current working directory.
+const HkupDirName = ".hkup"
 
 // CreateDirectory makes a new directory at the specified path.
 // Returns an error if the operation fails.
