@@ -29,14 +29,15 @@ import (
 // HkupDirName defines HkUp directory name within current working directory.
 const HkupDirName = ".hkup"
 
-// CreateDirectory makes a new directory at the specified path.
-// Returns an error if the operation fails.
+// CreateDirectory makes a new directory (along with any necessary parents) at
+// the specified path. Returns an error if the operation fails.
 func CreateDirectory(path string) error {
-	return os.Mkdir(path, os.ModePerm)
+	return os.MkdirAll(path, os.ModePerm)
 }
 
 // CreateFile makes a new file in the specified file path name.
 // Returns pointer to the new file and an error if the operation fails.
+//
 // NOTE: CreateFile does not close the file.
 func CreateFile(path string) (*os.File, error) {
 	file, err := os.Create(path)
@@ -104,7 +105,7 @@ func RunCommandInTerminal(root string, args ...string) error {
 
 // GetConfigFilePath returns the HkUp file path that holds configuration settings.
 func GetConfigFilePath() string {
-	return filepath.Join(GetConfigDirPath(), ".hkupconfig")
+	return filepath.Join(GetConfigDirPath(), "config")
 }
 
 // GetTemplateDirPath returns the HkUp config template directory path.
@@ -174,7 +175,7 @@ func YesNoPrompt(prompt string) (bool, error) {
 
 	response := strings.TrimSpace(scanner.Text())
 
-	// Pressing Enter key is equivalent to yes
+	// NOTE: Pressing Enter key is equivalent to yes
 	if response == "" || response == "y" || response == "Y" {
 		return true, nil
 	}
