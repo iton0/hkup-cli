@@ -18,19 +18,18 @@ import (
 //   - arg is not valid template name
 //   - issue with copying template to .hkup directory
 func Copy(cmd *cobra.Command, args []string) error {
-	configPath := util.GetConfigDirPath()
+	templatePath := util.GetTemplateDirPath()
 	var templateName string
 
 	switch {
-	case !util.DoesDirectoryExist(configPath):
-		return fmt.Errorf("%s directory does not exist", configPath)
+	case !util.DoesDirectoryExist(templatePath):
+		return fmt.Errorf("%s directory does not exist", templatePath)
 	case !util.DoesDirectoryExist(util.HkupDirName):
 		return fmt.Errorf("%s directory does not exist in current working directory", util.HkupDirName)
 	default:
 		templateName = args[0]
 	}
 
-	templatePath := util.GetTemplateDirPath()
 	file, err := doesTemplateExist(templatePath, templateName)
 	switch {
 	case err != nil:

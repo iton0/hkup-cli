@@ -52,16 +52,24 @@ func Create(cmd *cobra.Command, args []string) error {
 	configPath := util.GetConfigDirPath()
 	templatePath := util.GetTemplateDirPath()
 
-	if !util.DoesDirectoryExist(configPath) {
+	switch {
+	case !util.DoesDirectoryExist(configPath):
 		cmd.Printf("Making HkUp config directory at %s...\n", configPath)
 
-		err := util.CreateDirectory(configPath)
-		if err != nil {
+		// Creates both the Hkup config directory and its template subdirectory
+		if err := util.CreateDirectory(templatePath); err != nil {
 			return err
 		}
 
-		err = util.CreateDirectory(templatePath)
+		file, err := util.CreateFile(util.GetConfigFilePath())
 		if err != nil {
+			return err
+		}
+		defer file.Close()
+	case !util.DoesDirectoryExist(templatePath):
+		cmd.Printf("Making HkUp template directory at %s...\n", templatePath)
+
+		if err := util.CreateDirectory(templatePath); err != nil {
 			return err
 		}
 	}
