@@ -69,15 +69,6 @@ fi
 # Clean up the temporary file
 rm -f "$TEMP_PATH"
 
-# TODO: uncomment when finalized config settings
-# # Check if the file exists
-# FILE="$CONFIG_DIR/.hkupconfig"
-# if [ ! -f "$FILE" ]; then
-#   # If the file does not exist, create it and add text
-#   echo "editor = \"\"" >> "$FILE"
-#   echo "language = \"\"" >> "$FILE"
-# fi
-
 echo ""
 
 if [ "$INSTALLED_VERSION" != "None" ]; then
