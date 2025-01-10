@@ -201,6 +201,11 @@ func UserInputPrompt(prompt string) (string, error) {
 // GetINIValue gets the value of a specific key from the config settings INI file.
 // Returns value and error if issue with opening or reading file.
 func GetINIValue(key string) (string, error) {
+	_, exist := configSettings[key]
+	if !exist {
+		return "", fmt.Errorf("\"%s\" is not a valid key", key)
+	}
+
 	filePath := GetConfigFilePath()
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -238,16 +243,17 @@ func GetINIValue(key string) (string, error) {
 		}
 	}
 
-	// Handle the case where the key was not found
-	if err := scanner.Err(); err != nil {
-		return "", err
-	}
-	return "", fmt.Errorf("%s is not a valid key", key)
+	return "", nil
 }
 
 // SetINIValue modifies the value of a key in the config settings INI file.
 // Returns error if key not found or issue with reading or wriiting to file.
 func SetINIValue(key, newValue string) error {
+	_, exist := configSettings[key]
+	if !exist {
+		return fmt.Errorf("\"%s\" is not a valid key", key)
+	}
+
 	filePath := GetConfigFilePath()
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -284,6 +290,7 @@ func SetINIValue(key, newValue string) error {
 		updatedLines = append(updatedLines, line)
 	}
 
+	// TODO: update conditional to account for valid key but not currently in file
 	// If the key was not found, return an error
 	if !keyFound {
 		return fmt.Errorf("key '%s' not found", key)
