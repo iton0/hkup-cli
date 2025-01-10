@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/iton0/hkup-cli/compare/v0.4.2...v0.4.3) (2025-01-10)
+
+
+### Bug Fixes
+
+* improve HkUp config directory creation ([b9423f2](https://github.com/iton0/hkup-cli/commit/b9423f26209286c23d7da24d8048077556382b2d))
+
 ## [0.4.2](https://github.com/iton0/hkup-cli/compare/v0.4.1...v0.4.2) (2024-12-27)
 
 
