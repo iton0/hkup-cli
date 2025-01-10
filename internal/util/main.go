@@ -1,5 +1,6 @@
 /*
-Package util provides utility functions for tasks and operations such as:
+Package util provides utility functions and variables for tasks and
+operations such as:
   - terminal prompt creation
   - file/directory operations
   - retrieval of related system information
@@ -28,6 +29,12 @@ import (
 
 // HkupDirName defines HkUp directory name within current working directory.
 const HkupDirName = ".hkup"
+
+// configSettings holds the available configuration settings for HkUp.
+var configSettings = map[string]bool{
+	"editor":   true,
+	"language": true,
+}
 
 // CreateDirectory makes a new directory (along with any necessary parents) at
 // the specified path. Returns an error if the operation fails.
@@ -201,16 +208,18 @@ func UserInputPrompt(prompt string) (string, error) {
 // GetINIValue gets the value of a specific key from the config settings INI file.
 // Returns value and error if issue with opening or reading file.
 func GetINIValue(key string) (string, error) {
-	filePath := GetConfigFilePath()
-	file, err := os.Open(filePath)
+	if _, exist := configSettings[key]; !exist {
+		return "", fmt.Errorf("\"%s\" is not a valid key", key)
+	}
+
+	content, err := os.ReadFile(GetConfigFilePath())
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
 
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
+	lines := strings.Split(string(content), "\n")
+
+	for _, line := range lines {
 		line = strings.TrimSpace(line)
 
 		// Skip comments or empty lines
@@ -238,39 +247,53 @@ func GetINIValue(key string) (string, error) {
 		}
 	}
 
-	// Handle the case where the key was not found
-	if err := scanner.Err(); err != nil {
-		return "", err
-	}
-	return "", fmt.Errorf("%s is not a valid key", key)
+	// Valid key but not present in config file
+	return "", nil
 }
 
 // SetINIValue modifies the value of a key in the config settings INI file.
-// Returns error if key not found or issue with reading or wriiting to file.
+// Returns error if invalid key or issue with reading/writing to file.
 func SetINIValue(key, newValue string) error {
+	if _, exist := configSettings[key]; !exist {
+		return fmt.Errorf("\"%s\" is not a valid key", key)
+	}
+
 	filePath := GetConfigFilePath()
-	file, err := os.Open(filePath)
+
+	if !DoesDirectoryExist(GetConfigDirPath()) {
+		if err := CreateDirectory(GetConfigDirPath()); err != nil {
+			return err
+		}
+	}
+
+	if !DoesFileExist(filePath) {
+		file, err := CreateFile(filePath)
+		if err != nil {
+			return err
+		}
+		file.Close()
+	}
+
+	content, err := os.ReadFile(filePath)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 
+	lines := strings.Split(string(content), "\n")
 	updatedLines := []string{}
 	var keyFound bool
 
-	// Scanner to read the file line by line
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
+	for _, line := range lines {
+		trimmedLine := strings.TrimSpace(line)
 
 		// Skip empty lines or comments
-		if len(line) == 0 || line[0] == '#' || line[0] == ';' {
+		if len(trimmedLine) == 0 || trimmedLine[0] == '#' || trimmedLine[0] == ';' {
 			updatedLines = append(updatedLines, line)
 			continue
 		}
 
 		// Split the line into key and value
-		parts := strings.SplitN(line, "=", 2)
+		parts := strings.SplitN(trimmedLine, "=", 2)
 		if len(parts) == 2 {
 			keyInFile := strings.TrimSpace(parts[0])
 
@@ -284,16 +307,11 @@ func SetINIValue(key, newValue string) error {
 		updatedLines = append(updatedLines, line)
 	}
 
-	// If the key was not found, return an error
+	// Valid key but not set in config file
 	if !keyFound {
-		return fmt.Errorf("key '%s' not found", key)
+		updatedLines = append(updatedLines, fmt.Sprintf("%s = %s", key, newValue))
 	}
 
 	// Write the updated content back to the file
-	err = os.WriteFile(filePath, []byte(strings.Join(updatedLines, "\n")), 0644)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return os.WriteFile(filePath, []byte(strings.Join(updatedLines, "\n")), 0644)
 }
