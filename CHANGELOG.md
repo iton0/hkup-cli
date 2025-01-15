@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0](https://github.com/iton0/hkup-cli/compare/v0.4.2...v0.5.0) (2025-01-15)
+
+
+### Features
+
+* add config subcommand ([1fdf8d5](https://github.com/iton0/hkup-cli/commit/1fdf8d5151615b08f03c93f90004ab03ea65e251))
+* **cmd/list:** add config arg ([35ce6d5](https://github.com/iton0/hkup-cli/commit/35ce6d5728ac0b21b4e1d702913f56e83fd2714f))
+
+
+### Bug Fixes
+
+* improve HkUp config directory creation ([b9423f2](https://github.com/iton0/hkup-cli/commit/b9423f26209286c23d7da24d8048077556382b2d))
+* **util:** improve robustness of config functions ([79c8af9](https://github.com/iton0/hkup-cli/commit/79c8af98888e4668080770b5f7eb1d893c894ed3))
+
 ## [0.4.2](https://github.com/iton0/hkup-cli/compare/v0.4.1...v0.4.2) (2024-12-27)
 
 
