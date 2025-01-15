@@ -13,7 +13,8 @@ import (
 //   - Supported git hooks
 //   - Supported languages
 //   - User-defined git hook templates
-//   - Git hook(s) used in the current working directory
+//   - Configuration settings
+//   - Git hook(s) used in the current working directory (if no arg provided)
 //
 // Returns error if issue with checking directories.
 func List(cmd *cobra.Command, args []string) error {
@@ -30,6 +31,8 @@ func List(cmd *cobra.Command, args []string) error {
 			out = util.ConvertMapKeysToSlice(git.Hooks())
 		case "lang":
 			out = util.ConvertMapKeysToSlice(git.SupportedLangs())
+		case "config":
+			out = getConfigSettings()
 		}
 	} else {
 		out = getCwdHooks()
@@ -51,6 +54,18 @@ func formatOutput(out []string) string {
 	}
 
 	return fout
+}
+
+// getConfigSettings returns configuration settings with appropriate
+// definitions.
+func getConfigSettings() []string {
+	out := []string{}
+
+	for k, v := range util.ConfigSettings {
+		out = append(out, fmt.Sprintf("%s - %s", k, v))
+	}
+
+	return out
 }
 
 // getHookTemplates returns a slice of all user-defined template file names.

@@ -6,7 +6,7 @@ import (
 )
 
 var listCmd = &cobra.Command{
-	Use:   "list [hook|lang|template]",
+	Use:   "list [hook|lang|template|config]",
 	Short: "List git hooks information",
 	Long: `List git hooks information for the specified category.
 
@@ -16,8 +16,9 @@ in the current working directory.
 Valid arguments:
 - hook:     Displays supported git hooks.
 - lang:     Displays supported languages used for hooks.
-- template: Displays user-defined templates.`,
-	ValidArgs: []string{"hook", "lang", "template"},
+- template: Displays user-defined templates.
+- config:   Displays available configuration settings.`,
+	ValidArgs: []string{"hook", "lang", "template", "config"},
 	Args:      cobra.MatchAll(cobra.MaximumNArgs(1), cobra.OnlyValidArgs),
 	RunE:      logic.List,
 }
