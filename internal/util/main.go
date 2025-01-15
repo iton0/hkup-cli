@@ -30,10 +30,10 @@ import (
 // HkupDirName defines HkUp directory name within current working directory.
 const HkupDirName = ".hkup"
 
-// configSettings holds the available configuration settings for HkUp.
-var configSettings = map[string]bool{
-	"editor":   true,
-	"language": true,
+// ConfigSettings holds the available configuration settings for HkUp.
+var ConfigSettings = map[string]string{
+	"editor":   "default editor to use for editing templates",
+	"language": "default language to use for git hooks/templates",
 }
 
 // CreateDirectory makes a new directory (along with any necessary parents) at
@@ -208,7 +208,7 @@ func UserInputPrompt(prompt string) (string, error) {
 // GetINIValue gets the value of a specific key from the config settings INI file.
 // Returns value and error if issue with opening or reading file.
 func GetINIValue(key string) (string, error) {
-	if _, exist := configSettings[key]; !exist {
+	if _, exist := ConfigSettings[key]; !exist {
 		return "", fmt.Errorf("\"%s\" is not a valid key", key)
 	}
 
@@ -254,7 +254,7 @@ func GetINIValue(key string) (string, error) {
 // SetINIValue modifies the value of a key in the config settings INI file.
 // Returns error if invalid key or issue with reading/writing to file.
 func SetINIValue(key, newValue string) error {
-	if _, exist := configSettings[key]; !exist {
+	if _, exist := ConfigSettings[key]; !exist {
 		return fmt.Errorf("\"%s\" is not a valid key", key)
 	}
 

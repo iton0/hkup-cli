@@ -121,4 +121,4 @@ hkup template remove <template-name>
 1. ~~windows support~~
 2. ~~wrapper for git & gh clone~~
 3. HkUp logo (Expected by end of January)
-4. Finalize HkUp configuration settings and make config subcommand visible
+4. ~~Finalize HkUp configuration settings and make config subcommand visible~~
