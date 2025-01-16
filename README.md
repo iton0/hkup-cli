@@ -1,5 +1,4 @@
-# HkUp
-> Your CLI tool with benefits built by [iton0](https://github.com/iton0) in [Go](https://go.dev/)!
+<img alt="HkUp Logo" align="left" height="128" src="/assets/logo.svg" /> *Your CLI tool with benefits built by [iton0](https://github.com/iton0) in [Go](https://go.dev/)!*
 
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/iton0/hkup-cli)](https://github.com/iton0/hkup-cli/releases/latest)
 [![godoc](https://godoc.org/github.com/iton0/hkup-cli?status.svg)](http://godoc.org/github.com/iton0/hkup-cli)
@@ -7,8 +6,7 @@
 
 ![GitHub watchers](https://img.shields.io/github/watchers/iton0/hkup-cli?style=social)
 ![GitHub stars](https://img.shields.io/github/stars/iton0/hkup-cli?style=social)
-
-## Introduction
+#
 Git hooks automate processes in your workflow, enhancing code quality and consistency. Common use cases include:
 - Commit Message Validation
 - Environment Configuration
@@ -74,7 +72,6 @@ Add or remove hooks easily with:
 
 ```sh
 hkup add <hook-name>
-
 hkup remove <hook-name>
 ```
 
@@ -117,8 +114,5 @@ hkup template edit <template-name>
 hkup template remove <template-name>
 ```
 
-## Roadmap to v1.0.0
-1. ~~windows support~~
-2. ~~wrapper for git & gh clone~~
-3. HkUp logo (Expected by end of January)
-4. ~~Finalize HkUp configuration settings and make config subcommand visible~~
+## Credits
+[DeAndre Sawyer](https://deandres.myportfolio.com/) for the logo.
