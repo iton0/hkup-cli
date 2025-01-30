@@ -208,12 +208,13 @@ func UserInputPrompt(prompt string) (string, error) {
 // GetINIValue gets the value of a specific key from the config settings INI file.
 // Returns value and error if issue with opening or reading file.
 func GetINIValue(key string) (string, error) {
-	if _, exist := ConfigSettings[key]; !exist {
+	_, exist := ConfigSettings[key]
+	if !exist {
 		return "", fmt.Errorf("\"%s\" is not a valid key", key)
 	}
 
 	content, err := os.ReadFile(GetConfigFilePath())
-	if err != nil {
+	if err != nil && exist && DoesFileExist(GetConfigFilePath()) {
 		return "", err
 	}
 
