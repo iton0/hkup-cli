@@ -23,6 +23,7 @@ var (
 )
 
 func init() {
+	rootCmd.AddCommand(endCmd)
 	rootCmd.AddCommand(initCmd)
 	rootCmd.AddCommand(addCmd)
 	rootCmd.AddCommand(removeCmd)

@@ -6,6 +6,7 @@ implemented in the respective commands of the [github.com/iton0/hkup-cli/cmd] pa
 
 Commands:
   - Init: Initializes HkUp.
+  - End: Resets the local hooksPath variable.
   - Add: Adds a new Git hook with the specified name and optional programming language.
   - Remove: Removes an existing Git hook with the specified name.
   - List: Lists all available Git hooks or supported Git hook languages.
