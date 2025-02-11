@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"github.com/iton0/hkup-cli/internal/util"
 	"github.com/spf13/cobra"
@@ -45,7 +46,7 @@ func Init(cmd *cobra.Command, args []string) error {
 
 	if !ForceFlg {
 		out, _ := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput()
-		if len(out) != 0 {
+		if len(strings.TrimSpace(string(out))) != 0 {
 			return fmt.Errorf("hooksPath already set to %s", out)
 		}
 	}
