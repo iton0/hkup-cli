@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0](https://github.com/iton0/hkup-cli/compare/v1.0.0...v1.1.0) (2025-02-11)
+
+
+### Features
+
+* add end subcommand ([a087ec9](https://github.com/iton0/hkup-cli/commit/a087ec97f23f7a4088df071fc21edabf09ac9b62))
+
+
+### Bug Fixes
+
+* **internal/logic/init:** update conditional logic ([db3d70f](https://github.com/iton0/hkup-cli/commit/db3d70fa477208b1baf05abe0e2d9cf60ba4da99))
+
 ## [0.5.0](https://github.com/iton0/hkup-cli/compare/v0.4.2...v0.5.0) (2025-01-15)
 
 
