@@ -115,4 +115,4 @@ hkup template remove <template-name>
 ```
 
 ## Credits
-[DeAndre Sawyer](https://deandres.myportfolio.com/) for the logo.
+[DeAndre Sawyer](https://deandresawyer.myportfolio.com/) for the logo.
