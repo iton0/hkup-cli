@@ -33,6 +33,11 @@ var (
 //   - hooksPath is already set
 //   - issue with setting the hooksPath
 func Init(cmd *cobra.Command, args []string) error {
+	isBare, err := isBareRepo(".")
+	if err != nil { // Current working directory is not a git repository at all
+		return err
+	}
+
 	gitCmd := []string{}   // Holds everything after the root git command
 	var hkupDirPath string // Holds the path the .hkup directory
 
@@ -51,5 +56,20 @@ func Init(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return exec.Command("git", gitCmd...).Run()
+	if err := exec.Command("git", gitCmd...).Run(); err != nil {
+		return err
+	}
+
+	absPath, _ := filepath.Abs(hkupDirPath)
+	if !util.DoesDirectoryExist(util.HkupDirName) && !isBare {
+		if err := util.CreateDirectory(util.HkupDirName); err != nil {
+			return err
+		}
+
+		cmd.Printf("Initialized hkup directory at %s\n", absPath)
+	} else {
+		cmd.Printf("Reinitialized hkup directory at %s\n", absPath)
+	}
+
+	return nil
 }

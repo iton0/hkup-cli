@@ -16,17 +16,9 @@ var LangFlg string
 // programming language in the designated .hkup directory. Returns error if any
 // of the steps fail above.
 func Add(cmd *cobra.Command, args []string) error {
-	isBare, err := isBareRepo(".")
+	_, err := isBareRepo(".")
 	if err != nil { // Current working directory is not a git repository at all
 		return err
-	}
-
-	if !util.DoesDirectoryExist(util.HkupDirName) && !isBare {
-		if err := util.CreateDirectory(util.HkupDirName); err != nil {
-			return err
-		}
-
-		cmd.Printf("Initialized hkup directory at %s\n", util.HkupDirName)
 	}
 
 	hook := args[0]
