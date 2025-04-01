@@ -9,7 +9,8 @@ import (
 
 var (
 	// NOTE: Updated to the latest release version at build time of the binaries
-	//       via .github/workflows/release-please.yml
+	//       via .github/workflows/release-please.yml.
+	// 		 Defaults to "dev" when developing/building
 	version = "dev"
 
 	rootCmd = &cobra.Command{
