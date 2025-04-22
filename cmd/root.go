@@ -32,6 +32,7 @@ func init() {
 	rootCmd.AddCommand(config.RootCmd)
 	rootCmd.AddCommand(docCmd)
 	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(statusCmd)
 }
 
 // Execute serves as a wrapper for the Cobra API's Execute function, allowing it

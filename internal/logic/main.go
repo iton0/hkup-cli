@@ -12,6 +12,7 @@ Commands:
   - List: Lists all available Git hooks or supported Git hook languages.
   - Doc: Opens browser for specified Git hook documentation.
   - Root: Wraps git-related clone commands for easier initialization of HkUp.
+  - Status: Shows if HkUp is active for current working directory.
 */
 package logic
 
