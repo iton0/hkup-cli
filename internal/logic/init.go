@@ -50,8 +50,10 @@ func Init(cmd *cobra.Command, args []string) error {
 	}
 
 	if !ForceFlg {
-		out, _ := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput()
-		if len(strings.TrimSpace(string(out))) != 0 {
+		out, err := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput()
+		if err != nil {
+			return err
+		} else if len(strings.TrimSpace(string(out))) != 0 {
 			return fmt.Errorf("hooksPath already set to %s", out)
 		}
 	}
@@ -60,7 +62,10 @@ func Init(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	absPath, _ := filepath.Abs(hkupDirPath)
+	absPath, err := filepath.Abs(hkupDirPath)
+	if err != nil {
+		return err
+	}
 	if !util.DoesDirectoryExist(util.HkupDirName) && !isBare {
 		if err := util.CreateDirectory(util.HkupDirName); err != nil {
 			return err

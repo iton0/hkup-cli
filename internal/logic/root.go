@@ -53,14 +53,18 @@ func cdLogic(possibleRepoUrl, possibleCustomDir string) error {
 	createdDir := possibleCustomDir // Holds the name of the cloned directory
 
 	if usedDefaultGit {
-		if isBare, _ := isBareRepo(possibleCustomDir[start:]); isBare {
+		if isBare, err := isBareRepo(possibleCustomDir[start:]); err != nil {
+			return err
+		} else if isBare {
 			createdDir = possibleCustomDir[start:]
 		} else {
 			end := strings.LastIndex(possibleCustomDir, ".git")
 			createdDir = possibleCustomDir[start:end]
 		}
 	} else if usedDefaultGh {
-		if isBare, _ := isBareRepo(possibleCustomDir[start:] + ".git"); isBare {
+		if isBare, err := isBareRepo(possibleCustomDir[start:] + ".git"); err != nil {
+			return err
+		} else if isBare {
 			createdDir = possibleCustomDir[start:] + ".git"
 		} else {
 			createdDir = possibleCustomDir[start:]
