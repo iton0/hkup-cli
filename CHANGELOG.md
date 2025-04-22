@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/iton0/hkup-cli/compare/v1.1.0...v1.2.0) (2025-04-22)
+
+
+### Features
+
+* add status subcommand ([40e2e43](https://github.com/iton0/hkup-cli/commit/40e2e43f4af64f6f4c362287f458e4b9c2c56853))
+
+
+### Bug Fixes
+
+* **logic:** handle all errors ([f92d252](https://github.com/iton0/hkup-cli/commit/f92d25260d8a772f7255cb851cff95c91eb4ecc7))
+
 ## [1.1.0](https://github.com/iton0/hkup-cli/compare/v1.0.0...v1.1.0) (2025-02-11)
 
 
