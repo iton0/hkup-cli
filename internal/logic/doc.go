@@ -18,7 +18,7 @@ import (
 //   - hook key is invalid
 //   - platform is unsupported
 //   - issue starting the command
-func Doc(cmd *cobra.Command, args []string) error {
+func Doc(_ *cobra.Command, args []string) error {
 	// Full url path for the specified git hook
 	url := "https://git-scm.com/docs/githooks#" + git.GetHookUrl(args[0])
 

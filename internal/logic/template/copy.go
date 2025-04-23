@@ -17,7 +17,7 @@ import (
 //   - .hkup directory does not exist in current working directory
 //   - arg is not valid template name
 //   - issue with copying template to .hkup directory
-func Copy(cmd *cobra.Command, args []string) error {
+func Copy(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 	var templateName string
 

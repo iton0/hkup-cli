@@ -12,7 +12,7 @@ import (
 // Returns error if:
 //   - template does not follow naming convetion
 //   - issues with removing file
-func Remove(cmd *cobra.Command, args []string) error {
+func Remove(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 
 	if !util.DoesDirectoryExist(templatePath) {

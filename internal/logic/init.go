@@ -62,15 +62,12 @@ func Init(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	absPath, err := filepath.Abs(hkupDirPath)
-	if err != nil {
+	if absPath, err := filepath.Abs(hkupDirPath); err != nil {
 		return err
-	}
-	if !util.DoesDirectoryExist(util.HkupDirName) && !isBare {
+	} else if !util.DoesDirectoryExist(util.HkupDirName) && !isBare {
 		if err := util.CreateDirectory(util.HkupDirName); err != nil {
 			return err
 		}
-
 		cmd.Printf("Initialized hkup directory at %s\n", absPath)
 	} else {
 		cmd.Printf("Reinitialized hkup directory at %s\n", absPath)

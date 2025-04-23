@@ -15,7 +15,7 @@ var LangFlg string
 // Add creates a new Git hook with the specified git hook name and optional
 // programming language in the designated .hkup directory. Returns error if any
 // of the steps fail above.
-func Add(cmd *cobra.Command, args []string) error {
+func Add(_ *cobra.Command, args []string) error {
 	_, err := isBareRepo(".")
 	if err != nil { // Current working directory is not a git repository at all
 		return err
@@ -40,10 +40,10 @@ func Add(cmd *cobra.Command, args []string) error {
 	}
 
 	file, err := util.CreateFile(filePath)
+	defer file.Close()
 	if err != nil {
 		return err
 	}
-	defer file.Close()
 
 	_, err = file.WriteString(sheBangLine)
 	if err != nil {

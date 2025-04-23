@@ -14,7 +14,7 @@ import (
 // Returns error if:
 //   - template is not valid
 //   - editor is not found
-func Edit(cmd *cobra.Command, args []string) error {
+func Edit(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 
 	out, err := doesTemplateExist(templatePath, args[0])
