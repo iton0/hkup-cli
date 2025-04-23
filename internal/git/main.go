@@ -15,7 +15,8 @@ var (
 	// Git hooks documentation site.
 	//
 	// INFO: This map is up to date as of 11/19/2024.
-	// Source: https://git-scm.com/docs/githooks
+	// SOURCE: https://git-scm.com/docs/githooks
+	// NOTE: update the date whenever modifying the map
 	hooks = map[string]string{
 		"applypatch-msg":        "_applypatch_msg",
 		"pre-applypatch":        "_pre_applypatch",
