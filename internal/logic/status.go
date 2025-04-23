@@ -17,7 +17,7 @@ func Status(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	if out, err := exec.Command("git", "config", "--local", "core.hooksPath").CombinedOutput(); err != nil {
+	if out, err := exec.Command("git", "config", "--local", "core.hooksPath").CombinedOutput(); err != nil && len(out) != 0 {
 		return err
 	} else if strings.TrimSpace(string(out)) != util.HkupDirName {
 		cmd.Printf("inactive\n")
