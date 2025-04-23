@@ -49,7 +49,7 @@ func getEditor() (string, error) {
 		return editor, nil
 	}
 
-	if out, err := exec.Command("git", "config", "--global", "core.editor").CombinedOutput(); err != nil {
+	if out, err := exec.Command("git", "config", "--global", "core.editor").CombinedOutput(); err != nil && len(out) != 0 {
 		return "", err
 	} else if len(out) != 0 {
 		return string(out[0:(len(out) - 1)]), nil
