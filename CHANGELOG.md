@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/iton0/hkup-cli/compare/v1.2.0...v1.3.0) (2025-04-24)
+
+
+### Features
+
+* **end:** add command output ([a50b826](https://github.com/iton0/hkup-cli/commit/a50b826ffc7930fde6099a017dcb9567c53b3865))
+
+
+### Bug Fixes
+
+* **status:** handle unset local git core.hooksPath ([ac59915](https://github.com/iton0/hkup-cli/commit/ac5991551160be6c129ed3424c7ca187b75bd113))
+* **template:** handle unset global git core.editor ([46010b6](https://github.com/iton0/hkup-cli/commit/46010b60ee11296bf92cfa0914395e4d392ea1e0))
+
 ## [1.2.0](https://github.com/iton0/hkup-cli/compare/v1.1.0...v1.2.0) (2025-04-22)
 
 
