@@ -15,12 +15,19 @@ var AllFlg bool
 // Returns error if issue:
 // - deleting .hkup folder (if --all flag used)
 // - resetting the hooksPath
-func End(_ *cobra.Command, args []string) error {
+func End(cmd *cobra.Command, args []string) error {
 	if AllFlg {
 		if err := os.RemoveAll(util.HkupDirName); err != nil {
 			return err
 		}
+		cmd.Println("Removed .hkup directory and contents")
 	}
 
-	return exec.Command("git", "config", "--local", "core.hooksPath", "").Run()
+	err := exec.Command("git", "config", "--local", "core.hooksPath", "").Run()
+	if err != nil {
+		return err
+	}
+
+	cmd.Println("hkup unset")
+	return nil
 }
