@@ -62,10 +62,10 @@ func Create(cmd *cobra.Command, args []string) error {
 		}
 
 		file, err := util.CreateFile(util.GetConfigFilePath())
-		defer file.Close()
 		if err != nil {
 			return err
 		}
+		defer file.Close()
 	case !util.DoesDirectoryExist(templatePath):
 		cmd.Printf("Making HkUp template directory at %s...\n", templatePath)
 
@@ -98,10 +98,10 @@ func createTemplate(templatePath string) error {
 	}
 
 	file, err := util.CreateFile(createdTemplateFullPath)
-	defer file.Close()
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	var fileContent string
 	if pTemplate.lang == "" {

@@ -38,7 +38,7 @@ func Init(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	gitCmd := []string{}   // Holds everything after the root git command
+	var gitCmd []string    // Holds everything after the root git command
 	var hkupDirPath string // Holds the path the .hkup directory
 
 	if GitDirFlg != "" && WorkTreeFlg != "" {

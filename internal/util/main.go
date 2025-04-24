@@ -132,16 +132,16 @@ func CopyFile(src, dst string) error {
 	}
 
 	srcFile, err := os.Open(src)
-	defer srcFile.Close()
 	if err != nil {
 		return err
 	}
+	defer srcFile.Close()
 
 	dstFile, err := os.Create(dst)
-	defer dstFile.Close()
 	if err != nil {
 		return err
 	}
+	defer dstFile.Close()
 
 	if _, err = io.Copy(dstFile, srcFile); err != nil {
 		return err
@@ -153,7 +153,7 @@ func CopyFile(src, dst string) error {
 // MakeExecutable makes the filePath executable.
 // Returns error if issue with making executable.
 func MakeExecutable(filePath string) error {
-	return os.Chmod(filePath, 0755)
+	return os.Chmod(filePath, 0o755)
 }
 
 // ConvertMapKeysToSlice transforms the map string keys into a returned slice
@@ -314,5 +314,5 @@ func SetINIValue(key, newValue string) error {
 	}
 
 	// Write the updated content back to the file
-	return os.WriteFile(filePath, []byte(strings.Join(updatedLines, "\n")), 0644)
+	return os.WriteFile(filePath, []byte(strings.Join(updatedLines, "\n")), 0o644)
 }

@@ -40,10 +40,10 @@ func Add(_ *cobra.Command, args []string) error {
 	}
 
 	file, err := util.CreateFile(filePath)
-	defer file.Close()
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	_, err = file.WriteString(sheBangLine)
 	if err != nil {
