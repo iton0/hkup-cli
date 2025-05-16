@@ -32,7 +32,7 @@ Run the script below:
 curl -sSL https://raw.githubusercontent.com/iton0/hkup-cli/main/scripts/install | sh
 ```
 > [!Tip]
-> To update HkUp, simply rerun the script above. It will automatically replace your current version with the latest release.
+> To update HkUp, simply rerun the script above. It will automatically replace your current version with the latest stable release.
 
 ### Uninstalling HkUp
 
