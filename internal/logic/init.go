@@ -51,10 +51,12 @@ func Init(cmd *cobra.Command, args []string) error {
 
 	if !ForceFlg {
 		out, err := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput()
-		if err != nil {
-			return err
-		} else if len(strings.TrimSpace(string(out))) != 0 {
-			return fmt.Errorf("hooksPath already set to %s", out)
+		if len(strings.TrimSpace(string(out))) != 0 {
+			if err != nil {
+				return err
+			} else {
+				return fmt.Errorf("hooksPath already set to %s", out)
+			}
 		}
 	}
 
