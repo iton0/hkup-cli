@@ -50,7 +50,7 @@ func Init(cmd *cobra.Command, args []string) error {
 	}
 
 	if !ForceFlg {
-		out, err := exec.Command("git", gitCmd...).CombinedOutput()
+		out, err := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput()
 		if err != nil {
 			return err
 		} else if len(strings.TrimSpace(string(out))) != 0 {
