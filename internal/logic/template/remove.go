@@ -21,12 +21,11 @@ func Remove(_ *cobra.Command, args []string) error {
 
 	templateName := args[0]
 
-	switch file, err := doesTemplateExist(templatePath, templateName); {
-	case err != nil:
+	if file, err := doesTemplateExist(templatePath, templateName); err != nil {
 		return err
-	case file == "":
+	} else if file == "" {
 		return fmt.Errorf("template %s does not exist", templateName)
-	default:
+	} else {
 		return os.Remove(file)
 	}
 }

@@ -17,13 +17,11 @@ import (
 func Edit(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 
-	out, err := doesTemplateExist(templatePath, args[0])
-	switch {
-	case err != nil:
+	if out, err := doesTemplateExist(templatePath, args[0]); err != nil {
 		return err
-	case out == "":
+	} else if out == "" {
 		return fmt.Errorf("%s template does not exist", args[0])
-	default:
+	} else {
 		return editTemplate(out)
 	}
 }
@@ -31,19 +29,17 @@ func Edit(_ *cobra.Command, args []string) error {
 // editTemplate opens the template file with the default editor for HkUp.
 // Returns error if issue with opening editor.
 func editTemplate(path string) error {
-	editor, err := getEditor()
-	if err != nil {
+	if editor, err := getEditor(); err != nil {
 		return err
+	} else {
+		return util.RunCommandInTerminal(editor, path)
 	}
-
-	return util.RunCommandInTerminal(editor, path)
 }
 
 // getEditor makes best effort to find default editor for HkUp.
 // Returns editor name if found and error if issue with searching for editor.
 func getEditor() (string, error) {
-	editor, err := util.GetINIValue("editor")
-	if err != nil {
+	if editor, err := util.GetINIValue("editor"); err != nil {
 		return "", err
 	} else if editor != "" {
 		return editor, nil

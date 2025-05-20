@@ -21,22 +21,19 @@ func Copy(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 	var templateName string
 
-	switch {
-	case !util.DoesDirectoryExist(templatePath):
+	if !util.DoesDirectoryExist(templatePath) {
 		return fmt.Errorf("%s directory does not exist", templatePath)
-	case !util.DoesDirectoryExist(util.HkupDirName):
+	} else if !util.DoesDirectoryExist(util.HkupDirName) {
 		return fmt.Errorf("%s directory does not exist in current working directory", util.HkupDirName)
-	default:
+	} else {
 		templateName = args[0]
 	}
 
-	file, err := doesTemplateExist(templatePath, templateName)
-	switch {
-	case err != nil:
+	if file, err := doesTemplateExist(templatePath, templateName); err != nil {
 		return err
-	case file == "":
+	} else if file == "" {
 		return fmt.Errorf("not a valid arg \"%s\" for \"hkup template copy\"", templateName)
-	default:
+	} else {
 		return performCopy(file)
 	}
 }

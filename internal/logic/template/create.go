@@ -28,15 +28,15 @@ var (
 	// TemplateEditFlg is an optional flag indicating to edit the template.
 	TemplateEditFlg bool
 
-	// pTemplate is a pointer that holds information to create a new pTemplate.
+	// templatePtr is a pointer that holds information to create a new templatePtr.
 	// Info includes:
 	//   - git hook name (hook)
 	//   - language (lang)
-	//   - custom pTemplate name (name)
+	//   - custom templatePtr name (name)
 	//   - if to use git hook in the current working directory (useCwd)
-	//   - if to copy created pTemplate in the current working directory (copyHook)
-	//   - if to edit the created pTemplate by opening editor (edit)
-	pTemplate = &struct {
+	//   - if to copy created templatePtr in the current working directory (copyHook)
+	//   - if to edit the created templatePtr by opening editor (edit)
+	templatePtr = &struct {
 		hook, lang, name       string
 		useCwd, copyHook, edit bool
 	}{}
@@ -90,10 +90,10 @@ func Create(cmd *cobra.Command, args []string) error {
 func createTemplate(templatePath string) error {
 	fmt.Println() // Makes the output more distinct in regards to spacing
 
-	createdTemplateFullPath := filepath.Join(templatePath, pTemplate.name+"#"+pTemplate.hook)
+	createdTemplateFullPath := filepath.Join(templatePath, templatePtr.name+"#"+templatePtr.hook)
 
-	if pTemplate.useCwd {
-		srcPath := util.GetHookFilePath(pTemplate.hook)
+	if templatePtr.useCwd {
+		srcPath := util.GetHookFilePath(templatePtr.hook)
 		return util.CopyFile(srcPath, createdTemplateFullPath)
 	}
 
@@ -104,10 +104,10 @@ func createTemplate(templatePath string) error {
 	defer file.Close()
 
 	var fileContent string
-	if pTemplate.lang == "" {
+	if templatePtr.lang == "" {
 		fileContent = "#!/bin/sh"
 	} else {
-		fileContent = fmt.Sprintf("#!/usr/bin/env %s", pTemplate.lang)
+		fileContent = fmt.Sprintf("#!/usr/bin/env %s", templatePtr.lang)
 	}
 
 	_, err = file.WriteString(fileContent)
@@ -115,15 +115,15 @@ func createTemplate(templatePath string) error {
 		return err
 	}
 
-	if pTemplate.edit {
+	if templatePtr.edit {
 		if err := editTemplate(createdTemplateFullPath); err != nil {
 			return err
 		}
 		fmt.Println("Template successfully edited!")
 	}
 
-	if pTemplate.copyHook {
-		dstPath := filepath.Join(util.HkupDirName, pTemplate.hook)
+	if templatePtr.copyHook {
+		dstPath := filepath.Join(util.HkupDirName, templatePtr.hook)
 
 		err := util.CopyFile(createdTemplateFullPath, dstPath)
 		if err != nil {
@@ -148,8 +148,8 @@ func displayPrompt(templatePath string, arg ...string) error {
 	fmt.Println() // Makes the output more distinct in regards to spacing
 
 	if len(arg) == 1 {
-		pTemplate.hook = arg[0]
-		fmt.Printf("Creating template with %s hook...\n\n", pTemplate.hook)
+		templatePtr.hook = arg[0]
+		fmt.Printf("Creating template with %s hook...\n\n", templatePtr.hook)
 	} else if err := displayHookPrompt(); err != nil {
 		return err
 	}
@@ -160,16 +160,16 @@ func displayPrompt(templatePath string, arg ...string) error {
 		} else if out != "" {
 			return fmt.Errorf("template %s already exists", out)
 		}
-		pTemplate.name = TemplateNameFlg
+		templatePtr.name = TemplateNameFlg
 	} else if err := displayNamePrompt(templatePath); err != nil {
 		return err
 	}
 
 	if TemplateCwdFlg {
-		if !util.DoesFileExist(filepath.Join(util.HkupDirName, pTemplate.hook)) {
-			return fmt.Errorf("git hook %s does not exist in the current working directory", pTemplate.hook)
+		if !util.DoesFileExist(filepath.Join(util.HkupDirName, templatePtr.hook)) {
+			return fmt.Errorf("git hook %s does not exist in the current working directory", templatePtr.hook)
 		}
-		pTemplate.useCwd = true
+		templatePtr.useCwd = true
 	} else {
 		err := displayCwdPrompt()
 		if err != nil {
@@ -180,21 +180,21 @@ func displayPrompt(templatePath string, arg ...string) error {
 			if isValid := git.CheckLangSupported(TemplateLangFlg); !isValid {
 				return fmt.Errorf("language not supported: %s", TemplateLangFlg)
 			}
-			pTemplate.lang = TemplateLangFlg
+			templatePtr.lang = TemplateLangFlg
 		} else if err = displayLangPrompt(); err != nil {
 			return err
 		}
 
 		if TemplateCopyFlg {
-			pTemplate.copyHook = true
-		} else if !pTemplate.useCwd {
+			templatePtr.copyHook = true
+		} else if !templatePtr.useCwd {
 			if err = displayCopyPrompt(); err != nil {
 				return err
 			}
 		}
 
 		if TemplateEditFlg {
-			pTemplate.edit = true
+			templatePtr.edit = true
 		} else if err = displayEditPrompt(); err != nil {
 			return err
 		}
@@ -226,7 +226,7 @@ func displayHookPrompt(attempts ...int) error {
 		return displayHookPrompt(attempt)
 	}
 
-	pTemplate.hook = in
+	templatePtr.hook = in
 	return nil
 }
 
@@ -234,7 +234,7 @@ func displayHookPrompt(attempts ...int) error {
 // template.
 // Returns error if issue with reading response or after 3 incorrect attempts.
 func displayCwdPrompt() error {
-	if !util.DoesFileExist(filepath.Join(util.HkupDirName, pTemplate.hook)) {
+	if !util.DoesFileExist(filepath.Join(util.HkupDirName, templatePtr.hook)) {
 		return nil
 	}
 
@@ -243,7 +243,7 @@ func displayCwdPrompt() error {
 		return err
 	}
 
-	pTemplate.useCwd = isYes
+	templatePtr.useCwd = isYes
 	return nil
 }
 
@@ -259,23 +259,22 @@ func displayLangPrompt(attempts ...int) error {
 		return fmt.Errorf("3 incorrect attempts")
 	}
 
-	if pTemplate.useCwd {
+	if templatePtr.useCwd {
 		return nil
 	}
 
-	switch in, err := util.UserInputPrompt("Language (default sh):"); {
-	case err != nil:
+	if in, err := util.UserInputPrompt("Language (default sh):"); err != nil {
 		return err
-	case in == "":
+	} else if in == "" {
 		return nil
-	default:
+	} else {
 		if isValid := git.CheckLangSupported(in); !isValid {
 			attempt++
 			fmt.Println("Not a supported language. Please try again")
 			return displayLangPrompt(attempt)
 		}
 
-		pTemplate.lang = in
+		templatePtr.lang = in
 		return nil
 	}
 }
@@ -308,7 +307,7 @@ func displayNamePrompt(templatePath string, attempts ...int) error {
 		return displayNamePrompt(templatePath, attempt)
 	}
 
-	pTemplate.name = in
+	templatePtr.name = in
 	return nil
 }
 
@@ -321,7 +320,7 @@ func displayCopyPrompt() error {
 		return err
 	}
 
-	pTemplate.copyHook = isYes
+	templatePtr.copyHook = isYes
 	return nil
 }
 
@@ -333,6 +332,6 @@ func displayEditPrompt() error {
 		return err
 	}
 
-	pTemplate.edit = isYes
+	templatePtr.edit = isYes
 	return nil
 }
