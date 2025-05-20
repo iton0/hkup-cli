@@ -75,8 +75,6 @@ func cdLogic(possibleRepoUrl, possibleCustomDir string) error {
 }
 
 // isBareRepo reports if given directory (dir) is a bare git repository.
-// Additionally, returns error if the given directory is not a git repository
-// at all.
 func isBareRepo(dir string) (bool, error) {
 	out, err := exec.Command("git", "-C", dir, "rev-parse", "--is-bare-repository").Output()
 	if err != nil {
