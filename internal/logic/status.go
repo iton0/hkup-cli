@@ -17,13 +17,14 @@ func Status(cmd *cobra.Command, args []string) error {
 		return nil
 	}
 
-	if out, err := exec.Command("git", "config", "--local", "core.hooksPath").CombinedOutput(); err != nil && len(out) != 0 {
+	out, err := exec.Command("git", "config", "--local", "core.hooksPath").CombinedOutput()
+	if len(strings.TrimSpace(string(out))) != 0 && err != nil {
 		return err
 	} else if strings.TrimSpace(string(out)) != util.HkupDirName {
-		cmd.Printf("inactive\n")
-		return nil
+		cmd.Println("inactive")
+	} else {
+		cmd.Println("active")
 	}
 
-	cmd.Printf("active\n")
 	return nil
 }

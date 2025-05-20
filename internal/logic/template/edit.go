@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/iton0/hkup-cli/internal/util"
 	"github.com/spf13/cobra"
@@ -45,10 +46,13 @@ func getEditor() (string, error) {
 		return editor, nil
 	}
 
-	if out, err := exec.Command("git", "config", "--global", "core.editor").CombinedOutput(); err != nil && len(out) != 0 {
-		return "", err
-	} else if len(out) != 0 {
-		return string(out[0:(len(out) - 1)]), nil
+	out, err := exec.Command("git", "config", "--global", "core.editor").CombinedOutput()
+	if len(strings.TrimSpace(string(out))) != 0 {
+		if err != nil {
+			return "", err
+		} else {
+			return string(out[:(len(out) - 1)]), nil
+		}
 	}
 
 	if editor, exist := os.LookupEnv("EDITOR"); exist && editor != "" {
