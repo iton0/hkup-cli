@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.2](https://github.com/iton0/hkup-cli/compare/v1.3.1...v1.3.2) (2025-05-20)
+
+
+### Bug Fixes
+
+* **init:** update logic to fix 'hkup init' error ([749cecc](https://github.com/iton0/hkup-cli/commit/749ceccd5669212d4ef6ed07baa160f68582b22a))
+* revert commit 8f61a33 ([ea5e481](https://github.com/iton0/hkup-cli/commit/ea5e48197b4b6ecc617964b6559d6698b66677d1))
+* update logic to properly handle empty values ([1b9e297](https://github.com/iton0/hkup-cli/commit/1b9e297de21b48bda4d6159dccb2e4604a193b61))
+
 ## [1.3.1](https://github.com/iton0/hkup-cli/compare/v1.3.0...v1.3.1) (2025-05-20)
 
 
