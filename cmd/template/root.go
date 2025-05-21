@@ -7,7 +7,10 @@ import "github.com/spf13/cobra"
 var RootCmd = &cobra.Command{
 	Use:   "template",
 	Short: "Reusable Git hook",
-	Long:  "A template refers to a pre-configured, reusable Git hook that can be easily applied\nto a Git repository. The main goal of a template is to simplify and automate the setup\nof these hooks, making it easy to apply them consistently without having to \nwrite or configure the scripts from scratch each time.",
+	Long: `A template refers to a pre-configured, reusable Git hook that can be easily applied
+to a Git repository. The main goal of a template is to simplify and automate the setup
+of these hooks, making it easy to apply them consistently without having to
+write or configure the scripts from scratch each time.`,
 }
 
 func init() {
