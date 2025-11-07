@@ -42,6 +42,16 @@ func CreateDirectory(path string) error {
 	return os.MkdirAll(path, os.ModePerm)
 }
 
+// IsBareRepo reports if given directory (dir) is a bare git repository.
+func IsBareRepo(dir string) (bool, error) {
+	out, err := exec.Command("git", "-C", dir, "rev-parse", "--is-bare-repository").Output()
+	if err != nil {
+		return false, err
+	}
+
+	return strings.TrimSpace(string(out)) == "true", nil
+}
+
 // CreateFile makes a new file in the specified file path name.
 // Returns pointer to the new file and an error if the operation fails.
 //

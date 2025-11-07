@@ -11,7 +11,7 @@ import (
 // Status checks if hkup is set for the current working directory.
 // Returns error if issue with getting hooksPath via git command.
 func Status(cmd *cobra.Command, args []string) error {
-	_, err := isBareRepo(".")
+	_, err := util.IsBareRepo(".")
 	if err != nil { // Current working directory is not a git repository at all
 		cmd.Printf("Current working directory is not a git repository\n")
 		return nil

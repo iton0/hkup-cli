@@ -33,7 +33,7 @@ var (
 //   - hooksPath is already set
 //   - issue with setting the hooksPath
 func Init(cmd *cobra.Command, args []string) error {
-	isBare, err := isBareRepo(".")
+	isBare, err := util.IsBareRepo(".")
 	if err != nil { // Current working directory is not a git repository at all
 		return err
 	}

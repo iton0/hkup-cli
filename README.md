@@ -45,9 +45,6 @@ sh -c 'rm "$(command -v 'hkup')"'
 This section provides basic information about core usage. For detailed usage information run `hkup --help`.
 
 ### Initializing hkup
-HkUp provides two ways of initializing:
-
-#### 1. Creating a New Repository
 After you create a Git repository, run the following command in your Git repository to initialize HkUp:
 
 ```sh
@@ -55,17 +52,6 @@ hkup init
 ```
 
 This creates a **.hkup** directory and sets the local **core.hooksPath** variable. If the directory already exists, it will simply update the path variable. The path is relative, ensuring that moving your repository won’t affect hook sourcing.
-
-#### 2. Cloning a Repository
-The above command also works after cloning a repository but HkUp also provides means to wrap Git-related cloning commands for an easier process. By prepending your Git cloning command with `hkup --` you can clone your repository and initialize/reinitialize HkUp in a single command.
-
-```sh
-# Cloning the HkUp Github repository
-# and initializing the .hkup folder
-hkup -- git clone git@github.com:iton0/hkup-cli.git
-```
-> [!NOTE]
-> This works even for bare Git repositories!
 
 ### Adding & Removing hooks
 Add or remove hooks easily with:
