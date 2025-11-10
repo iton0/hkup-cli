@@ -47,7 +47,7 @@ func Copy(_ *cobra.Command, args []string) error {
 func doesTemplateExist(templatePath, name string) (string, error) {
 	files, err := os.ReadDir(templatePath)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("issue reading %s", templatePath)
 	}
 
 	for _, file := range files {

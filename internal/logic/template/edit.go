@@ -49,7 +49,7 @@ func getEditor() (string, error) {
 	out, err := exec.Command("git", "config", "--global", "core.editor").CombinedOutput()
 	if len(strings.TrimSpace(string(out))) != 0 {
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("issue checking global git editor configuration")
 		} else {
 			return string(out[:(len(out) - 1)]), nil
 		}

@@ -53,7 +53,7 @@ func Init(cmd *cobra.Command, args []string) error {
 		out, err := exec.Command("git", gitCmd[:len(gitCmd)-1]...).CombinedOutput()
 		if len(strings.TrimSpace(string(out))) != 0 {
 			if err != nil {
-				return err
+				return fmt.Errorf("issue updating local hooksPath variable")
 			} else {
 				return fmt.Errorf("hooksPath already set to %s", out)
 			}
@@ -61,11 +61,11 @@ func Init(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := exec.Command("git", gitCmd...).Run(); err != nil {
-		return err
+		return fmt.Errorf("issue updating local hooksPath variable")
 	}
 
 	if absPath, err := filepath.Abs(hkupDirPath); err != nil {
-		return err
+		return fmt.Errorf("issue finding absolute path for %s", hkupDirPath)
 	} else if !util.DoesDirectoryExist(util.HkupDirName) && !isBare {
 		if err := util.CreateDirectory(util.HkupDirName); err != nil {
 			return err

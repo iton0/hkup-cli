@@ -36,7 +36,7 @@ func Doc(_ *cobra.Command, args []string) error {
 	}
 
 	if err := termCmd.Start(); err != nil {
-		return err
+		return fmt.Errorf("issue starting %s", termCmd.String())
 	}
 
 	return termCmd.Wait()

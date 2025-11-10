@@ -47,7 +47,7 @@ func Add(_ *cobra.Command, args []string) error {
 
 	_, err = file.WriteString(sheBangLine)
 	if err != nil {
-		return err
+		return fmt.Errorf("issue writing shebang line to %s", file.Name())
 	}
 
 	return util.MakeExecutable(filePath)

@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 
@@ -18,14 +19,14 @@ var AllFlg bool
 func End(cmd *cobra.Command, args []string) error {
 	if AllFlg {
 		if err := os.RemoveAll(util.HkupDirName); err != nil {
-			return err
+			return fmt.Errorf("issue removing %s", util.HkupDirName)
 		}
 		cmd.Println("Removed .hkup directory and contents")
 	}
 
 	err := exec.Command("git", "config", "--local", "core.hooksPath", "").Run()
 	if err != nil {
-		return err
+		return fmt.Errorf("issue unsetting local hooksPath variable")
 	}
 
 	cmd.Println("hkup unset")
