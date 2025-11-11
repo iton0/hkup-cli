@@ -23,4 +23,6 @@ Valid arguments:
 	RunE:      logic.List,
 }
 
-func init() {}
+func init() {
+	rootCmd.AddCommand(listCmd)
+}

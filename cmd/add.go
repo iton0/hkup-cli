@@ -17,4 +17,5 @@ var addCmd = &cobra.Command{
 
 func init() {
 	addCmd.Flags().StringVar(&logic.LangFlg, "lang", "", "supported languages for git hooks")
+	rootCmd.AddCommand(addCmd)
 }

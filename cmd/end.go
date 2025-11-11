@@ -14,4 +14,5 @@ var endCmd = &cobra.Command{
 
 func init() {
 	endCmd.Flags().BoolVar(&logic.AllFlg, "all", false, "delete local .hkup folder")
+	rootCmd.AddCommand(endCmd)
 }

@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"github.com/iton0/hkup-cli/cmd/config"
-	"github.com/iton0/hkup-cli/cmd/template"
+	"os"
+
 	"github.com/spf13/cobra"
 )
 
@@ -22,19 +22,12 @@ var (
 )
 
 func init() {
-	rootCmd.AddCommand(endCmd)
-	rootCmd.AddCommand(initCmd)
-	rootCmd.AddCommand(addCmd)
-	rootCmd.AddCommand(removeCmd)
-	rootCmd.AddCommand(template.RootCmd)
-	rootCmd.AddCommand(config.RootCmd)
-	rootCmd.AddCommand(docCmd)
-	rootCmd.AddCommand(listCmd)
-	rootCmd.AddCommand(statusCmd)
 }
 
 // Execute serves as a wrapper for the Cobra API's Execute function, allowing it
 // to be called from the [github.com/iton0/hkup-cli] package.
 func Execute() {
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }

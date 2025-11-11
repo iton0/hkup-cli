@@ -1,15 +1,17 @@
-package config
+package cmd
 
 import (
 	"github.com/iton0/hkup-cli/internal/logic/config"
 	"github.com/spf13/cobra"
 )
 
-var getCmd = &cobra.Command{
+var getConfigCmd = &cobra.Command{
 	Use:   "get <config-setting>",
 	Short: "Get a HkUp config setting",
 	Args:  cobra.ExactArgs(1),
 	RunE:  config.Get,
 }
 
-func init() {}
+func init() {
+	configCmd.AddCommand(getConfigCmd)
+}

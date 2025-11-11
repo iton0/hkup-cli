@@ -15,4 +15,6 @@ var removeCmd = &cobra.Command{
 	RunE:      logic.Remove,
 }
 
-func init() {}
+func init() {
+	rootCmd.AddCommand(removeCmd)
+}

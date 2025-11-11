@@ -1,10 +1,8 @@
-package template
+package cmd
 
 import "github.com/spf13/cobra"
 
-// RootCmd is the root template subcommand that will be added to the root HkUp
-// command.
-var RootCmd = &cobra.Command{
+var templateCmd = &cobra.Command{
 	Use:   "template",
 	Short: "Reusable Git hook",
 	Long: `A template refers to a pre-configured, reusable Git hook that can be easily applied
@@ -14,8 +12,5 @@ write or configure the scripts from scratch each time.`,
 }
 
 func init() {
-	RootCmd.AddCommand(createCmd)
-	RootCmd.AddCommand(copyCmd)
-	RootCmd.AddCommand(editCmd)
-	RootCmd.AddCommand(removeCmd)
+	rootCmd.AddCommand(templateCmd)
 }

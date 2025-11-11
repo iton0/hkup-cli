@@ -15,4 +15,6 @@ var docCmd = &cobra.Command{
 	RunE:      logic.Doc,
 }
 
-func init() {}
+func init() {
+	rootCmd.AddCommand(docCmd)
+}
