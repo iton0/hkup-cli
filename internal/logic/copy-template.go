@@ -1,4 +1,4 @@
-package template
+package logic
 
 import (
 	"fmt"
@@ -10,14 +10,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// Copy copies a git hook template to the .hkup directory.
+// CopyTemplate copies a git hook template to the .hkup directory.
 //
 // Returns error if:
 //   - HkUp config directory does not exist
 //   - .hkup directory does not exist in current working directory
 //   - arg is not valid template name
 //   - issue with copying template to .hkup directory
-func Copy(_ *cobra.Command, args []string) error {
+func CopyTemplate(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 	var templateName string
 

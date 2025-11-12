@@ -1,4 +1,4 @@
-package template
+package logic
 
 import (
 	"fmt"
@@ -42,13 +42,13 @@ var (
 	}{}
 )
 
-// Create creates a git hook template from a specific git hook.
+// CreateTemplate creates a git hook template from a specific git hook.
 //
 // Returns error if:
 //   - issue with creating HkUp config directory or template directory
 //   - issue with displaying prompt
 //   - issue with creating the template
-func Create(cmd *cobra.Command, args []string) error {
+func CreateTemplate(cmd *cobra.Command, args []string) error {
 	configPath := util.GetConfigDirPath()
 	templatePath := util.GetTemplateDirPath()
 
