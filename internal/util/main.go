@@ -42,14 +42,11 @@ func CreateDirectory(path string) error {
 	return os.MkdirAll(path, os.ModePerm)
 }
 
-// IsBareRepo reports if given directory (dir) is a bare git repository.
-func IsBareRepo(dir string) (bool, error) {
-	out, err := exec.Command("git", "-C", dir, "rev-parse", "--is-bare-repository").Output()
-	if err != nil {
-		return false, fmt.Errorf("unable to check if %s is a bare git repository", dir)
-	}
-
-	return strings.TrimSpace(string(out)) == "true", nil
+// IsGitDirectory reports if given directory (dir) is a git directory. Works for
+// both regular and bare git directories.
+func IsGitDirectory(dir string) bool {
+	_, err := exec.Command("git", "-C", dir, "rev-parse", "--git-dir").Output()
+	return err == nil
 }
 
 // CreateFile makes a new file in the specified file path name.

@@ -33,9 +33,9 @@ var (
 //   - hooksPath is already set
 //   - issue with setting the hooksPath
 func Init(cmd *cobra.Command, args []string) error {
-	isBare, err := util.IsBareRepo(".")
-	if err != nil { // Current working directory is not a git repository at all
-		return err
+	isGit := util.IsGitDirectory(".")
+	if !isGit { // Current working directory is not a git repository at all
+		return fmt.Errorf("current working directory is not a git directory.\nNeed to initialize git.\n")
 	}
 
 	var gitCmd []string    // Holds everything after the root git command
@@ -66,7 +66,7 @@ func Init(cmd *cobra.Command, args []string) error {
 
 	if absPath, err := filepath.Abs(hkupDirPath); err != nil {
 		return fmt.Errorf("issue finding absolute path for %s", hkupDirPath)
-	} else if !util.DoesDirectoryExist(util.HkupDirName) && !isBare {
+	} else if !util.DoesDirectoryExist(util.HkupDirName) {
 		if err := util.CreateDirectory(util.HkupDirName); err != nil {
 			return err
 		}

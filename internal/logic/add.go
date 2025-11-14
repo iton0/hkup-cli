@@ -16,9 +16,12 @@ var LangFlg string
 // programming language in the designated .hkup directory. Returns error if any
 // of the steps fail above.
 func Add(_ *cobra.Command, args []string) error {
-	_, err := util.IsBareRepo(".")
-	if err != nil { // Current working directory is not a git repository at all
-		return err
+	if !util.IsGitDirectory(".") { // Current working directory is not a git repository at all
+		return fmt.Errorf("current working directory is not a git directory.\nNeed to initialize git")
+	}
+
+	if !util.DoesDirectoryExist(util.HkupDirName) {
+		return fmt.Errorf("%s does not exist in current working directory", util.HkupDirName)
 	}
 
 	hook := args[0]
