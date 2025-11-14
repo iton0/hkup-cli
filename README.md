@@ -19,12 +19,20 @@ Despite their benefits, many developers avoid Git hooks due to a lack of awarene
 HkUp simplifies Git hook management, allowing you to **focus on the logic and functionality of your hooks**. Plus, with HkUp, **your hooks are version-controlled**.
 
 ## Installation
+
+This script downloads and installs the latest release binary from GitHub.
+
 ### External Dependencies:
-- `git`
-- `curl`
-- `grep`
+
+The following core system utilities are required for the installation script to run successfully:
+
+* **`curl`**: Used to fetch the latest release information and download the binary.
+* **`grep`** & **`sed`**: Essential command-line text processing tools.
+* **`jq`** (Recommended): Provides reliable JSON parsing for fetching the latest version from the GitHub API. If `jq` is not found, the script will fall back to using `grep` and `sed`.
+* **`install`** (Optional): A standard utility used for atomic file replacement and securely setting executable permissions. If not found, the script will fall back to using `mv` and `chmod`.
+
 > [!NOTE]
-> Windows users need to install [Cygwin](https://cygwin.com/install.html) and add External Dependencies via the Cygwin setup program.
+> Windows users must execute the installation script within a Unix-like environment such as **Cygwin**, **MSYS2**, or **WSL** (Windows Subsystem for Linux) and ensure the dependencies above are installed within that environment.
 
 ### Install Script
 Run the script below:

@@ -1,78 +1,263 @@
-#!/bin/sh
+#!/bin/bash
 
-# Define the GitHub repository
+# ==============================================================================
+# hkup-cli Installation/Update Script
+# A robust, cross-platform script for installing/updating the hkup-cli binary.
+# ==============================================================================
+
 REPO="iton0/hkup-cli"
+BINARY_ALIAS="hkup" 
 
-# Determine the binary name and installation path based on the OS
-case "$(uname)" in
-  Linux|Darwin)
-    BINARY_NAME="hkup-$(uname | tr '[:upper:]' '[:lower:]')"  # Dynamically choose binary name based on OS
-    INSTALL_PATH="/usr/local/bin/hkup"
-    if [ -z "$XDG_CONFIG_HOME" ]; then
-      CONFIG_DIR="$HOME/.config/hkup/templates"  # Default to $HOME/.config if XDG_CONFIG_HOME is not set
-    else
-      CONFIG_DIR="$XDG_CONFIG_HOME/hkup/templates"
-    fi
-    mkdir -p "$CONFIG_DIR"
-    ;;
-  CYGWIN*|MINGW32*|MSYS*|MINGW*)
-    BINARY_NAME="hkup.exe"
-    INSTALL_PATH="$USERPROFILE\\bin\\hkup.exe"  # Use a user-specific directory
-    mkdir -p "$USERPROFILE\\bin"  # Create the bin directory if it doesn't exist
-    CONFIG_DIR="$LOCALAPPDATA\\hkup\\templates"  # Use LOCALAPPDATA for templates in Windows
-    mkdir -p "$CONFIG_DIR"
-    ;;
-  *)
-    echo "Unsupported OS: $(uname)"
+# --- 1. Utility Functions and Safety ---
+
+# Function to handle errors and exit
+error_exit() {
+    echo "ERROR: $1" >&2
     exit 1
-    ;;
-esac
+}
 
-# Get the latest release version from GitHub
-LATEST_RELEASE=$(curl -s "https://api.github.com/repos/$REPO/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-echo "Latest version: $LATEST_RELEASE"
+# Function to strip 'v' or 'V' prefix from version strings
+version_strip() {
+    # Remove 'v' or 'V' prefix and any subsequent non-numeric characters until the first digit
+    echo "$1" | sed -E 's/^[vV]+//g'
+}
 
-# Get the current installed version (if any)
-if [ -f "$INSTALL_PATH" ]; then
-  INSTALLED_VERSION=$($INSTALL_PATH --version 2>/dev/null)
-  echo "Currently installed version: $INSTALLED_VERSION"
-else
-  INSTALLED_VERSION="None"
-  echo "No version installed."
+# --- 1.1 Dependency Check ---
+echo "--- Checking Dependencies ---"
+REQUIRED_COMMANDS=("curl" "grep" "sed")
+
+for cmd in "${REQUIRED_COMMANDS[@]}"; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        error_exit "Required dependency '$cmd' not found. Please install it to continue."
+    fi
+done
+
+if ! command -v jq >/dev/null 2>&1; then
+    echo "Warning: 'jq' not found. Falling back to less reliable grep/sed parsing for version number." >&2
 fi
 
-# Check if HkUp is installed and if local version matches latest release version
-if [ "$INSTALLED_VERSION" != "None" ] && [ "$(echo "$INSTALLED_VERSION" | cut -d' ' -f3)" = "$(echo "$LATEST_RELEASE" | cut -c2-)" ]; then
-  echo "You already have the latest version installed."
-  exit 0
+if command -v install >/dev/null 2>&1; then
+    INSTALL_CMD="install -m 755"
+    echo "Using 'install' command."
+else
+    INSTALL_CMD="mv"
+    echo "Warning: 'install' not found. Falling back to 'mv' and manual chmod." >&2
+fi
+
+echo "Dependencies OK."
+
+TEMP_FILE="$(mktemp)" || error_exit "Failed to create temporary file."
+trap 'rm -f "$TEMP_FILE"' EXIT HUP INT TERM
+
+# --- 2. Determine OS-Specific Variables and Install Path (FIXED) ---
+case "$(uname)" in
+    Linux|Darwin)
+        # --- 2.1 Determine Original User, Home Directory, and XDG Path ---
+        
+        # Determine the effective user/home when run with sudo
+        if [ "$(id -u)" = "0" ] && [ -n "$SUDO_USER" ]; then
+            ORIGINAL_USER="$SUDO_USER"
+            ORIGINAL_HOME=$(getent passwd "$ORIGINAL_USER" | cut -d: -f6 2>/dev/null)
+            ORIGINAL_HOME="${ORIGINAL_HOME:-/home/$ORIGINAL_USER}"
+            
+            USER_XDG_CONFIG_HOME="$ORIGINAL_HOME/.config"
+            CONFIG_OWNER="$ORIGINAL_USER"
+            
+        else
+            ORIGINAL_USER="$(id -un)"
+            ORIGINAL_HOME="$HOME"
+            
+            USER_XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+            CONFIG_OWNER="$ORIGINAL_USER"
+        fi
+        
+        # --- 2.2 Define Installation and Configuration Paths ---
+        
+        BINARY_NAME="hkup-$(uname | tr '[:upper:]' '[:lower:]')"
+        INSTALL_PATH_SYSTEM="/usr/local/bin/$BINARY_ALIAS"
+        INSTALL_PATH_USER="$ORIGINAL_HOME/.local/bin/$BINARY_ALIAS"
+        
+        CONFIG_DIR="$USER_XDG_CONFIG_HOME/$BINARY_ALIAS" 
+        TEMPLATES_DIR="$CONFIG_DIR/templates"
+        
+        # --- 2.3 Determine Final Install Path and Sudo Requirement (FIXED LOGIC) ---
+        
+
+        if [ "$(id -u)" = "0" ]; then
+            # If running as root, always target system path and skip user path check.
+            INSTALL_PATH="$INSTALL_PATH_SYSTEM"
+            echo "Selecting system path (Running as root): $INSTALL_PATH"
+
+        elif mkdir -p "$(dirname "$INSTALL_PATH_USER")" && [ -w "$(dirname "$INSTALL_PATH_USER")" ]; then
+            # Running as a regular user, target user path.
+            INSTALL_PATH="$INSTALL_PATH_USER"
+            echo "Selecting user path: $INSTALL_PATH"
+
+        elif [ -w "$(dirname "$INSTALL_PATH_SYSTEM")" ]; then
+            # Regular user, but system path is writable (uncommon, but possible).
+            INSTALL_PATH="$INSTALL_PATH_SYSTEM"
+            echo "Selecting system path (Writable by user): $INSTALL_PATH"
+
+        else
+            error_exit "Could not find a writable installation directory for $BINARY_ALIAS. Tried $INSTALL_PATH_USER and $INSTALL_PATH_SYSTEM. Try running with 'sudo'."
+        fi
+        ;;
+    CYGWIN*|MINGW32*|MSYS*|MINGW*)
+        BINARY_NAME="hkup.exe"
+        BINARY_ALIAS="hkup.exe"
+        INSTALL_PATH="$HOME/bin/$BINARY_ALIAS" 
+        
+        if [ -n "$LOCALAPPDATA" ]; then
+            CONFIG_DIR="${LOCALAPPDATA}/$BINARY_ALIAS"
+        else
+            CONFIG_DIR="$HOME/AppData/Local/$BINARY_ALIAS"
+        fi
+
+        TEMPLATES_DIR="$CONFIG_DIR/templates"
+        CONFIG_OWNER="$(id -un)" 
+        ;;
+    *)
+        error_exit "Unsupported OS: $(uname). Only Linux, macOS, and Windows emulation (Cygwin/MinGW/MSYS) are supported."
+        ;;
+esac
+
+echo "--- Configuration ---"
+echo "Binary Target: $BINARY_NAME"
+echo "Install Path: $INSTALL_PATH"
+echo "Config Root: $CONFIG_DIR (Owner: $CONFIG_OWNER)"
+
+# Create installation directory
+if [ "$(id -u)" = "0" ]; then
+    # If running as root (either directly or via sudo), we rely on root permissions.
+    if ! mkdir -p "$(dirname "$INSTALL_PATH")"; then
+        error_exit "Failed to create installation directory: $(dirname "$INSTALL_PATH")."
+    fi
+else
+    # If not root, we rely on the user's permissions, which was checked in 2.3.
+    if ! mkdir -p "$(dirname "$INSTALL_PATH")"; then
+        error_exit "Failed to create installation directory: $(dirname "$INSTALL_PATH")."
+    fi
+fi
+
+# Create config directories and ensure correct ownership
+if [ "$(id -u)" = "0" ] && [ -n "$SUDO_USER" ]; then
+    # Running as root via sudo, use sudo for mkdir and chown
+    if ! mkdir -p "$CONFIG_DIR" "$TEMPLATES_DIR"; then
+        error_exit "Failed to create configuration directories."
+    fi
+    
+    # Set ownership for the config directories to the CONFIG_OWNER
+    if ! chown -R "$CONFIG_OWNER:$CONFIG_OWNER" "$CONFIG_DIR"; then
+        echo "Warning: Failed to set ownership of $CONFIG_DIR to $CONFIG_OWNER. Permissions may be incorrect." >&2
+    fi
+else
+    # Not running as root, just use standard mkdir
+    if ! mkdir -p "$CONFIG_DIR" "$TEMPLATES_DIR"; then
+        error_exit "Failed to create configuration directories."
+    fi
+fi
+
+# --- 3. Version Check ---
+echo "--- Checking for Latest Version ---"
+
+CURL_COMMAND="curl -s https://api.github.com/repos/$REPO/releases/latest"
+
+if command -v jq >/dev/null 2>&1; then
+    FULL_RELEASE_TAG=$($CURL_COMMAND | jq -r .tag_name)
+else
+    FULL_RELEASE_TAG=$($CURL_COMMAND | grep '"tag_name":' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+fi
+
+if [ -z "$FULL_RELEASE_TAG" ] || [ "$FULL_RELEASE_TAG" = "null" ]; then
+    error_exit "Could not retrieve latest release tag from GitHub API. Check network connection or repository path."
+fi
+
+DOWNLOAD_TAG="$FULL_RELEASE_TAG"
+LATEST_RELEASE=$(version_strip "$FULL_RELEASE_TAG")
+echo "Latest version available: **$LATEST_RELEASE**"
+
+INSTALLED_VERSION="None"
+VERSION_OUTPUT=""
+
+if [ -x "$INSTALL_PATH" ]; then
+    VERSION_OUTPUT=$("$INSTALL_PATH" --version 2>/dev/null)
+fi
+
+if [ -z "$VERSION_OUTPUT" ] && command -v "$BINARY_ALIAS" >/dev/null 2>&1; then
+    VERSION_OUTPUT=$("$BINARY_ALIAS" --version 2>/dev/null)
+fi
+
+if [ -n "$VERSION_OUTPUT" ]; then
+    CLEAN_VERSION=$(echo "$VERSION_OUTPUT" | grep -oE '[vV]?[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+    INSTALLED_VERSION=$(version_strip "$CLEAN_VERSION")
+fi
+
+echo "Currently installed version: **${INSTALLED_VERSION:-None}**"
+
+if [ "$INSTALLED_VERSION" = "$LATEST_RELEASE" ]; then
+    echo ""
+    echo "✅ You already have the latest version ($LATEST_RELEASE) installed."
+    exit 0
 fi
 
 echo ""
 
-# Download the binary for the latest release to a temporary location
-TEMP_PATH=$(mktemp)
-echo "Downloading $BINARY_NAME version $LATEST_RELEASE..."
-curl -L "https://github.com/$REPO/releases/download/$LATEST_RELEASE/$BINARY_NAME" -o "$TEMP_PATH"
-if [ $? -ne 0 ]; then
-  echo "Failed to download the binary."
-  exit 1
+# --- 4. Download and Install (Sudo Handling Simplified) ---
+
+DOWNLOAD_URL="https://github.com/$REPO/releases/download/$DOWNLOAD_TAG/$BINARY_NAME"
+echo "🚀 Starting download of $BINARY_NAME version $LATEST_RELEASE..."
+
+if [ -t 1 ]; then
+    PROGRESS_FLAG="--progress-bar"
+else
+    PROGRESS_FLAG="-s"
 fi
 
-# Move the downloaded binary to the installation path
-sudo mv "$TEMP_PATH" "$INSTALL_PATH"
-
-# Make it executable (Linux and macOS)
-if [ "$(uname)" != "CYGWIN" ] && [ "$(uname)" != "MINGW" ]; then
-  sudo chmod +x "$INSTALL_PATH"  # Use sudo to change permissions
+if ! curl -fL "$DOWNLOAD_URL" -o "$TEMP_FILE" "$PROGRESS_FLAG"; then
+    error_exit "Failed to download the binary from $DOWNLOAD_URL. Check the download URL: $DOWNLOAD_URL"
 fi
 
-# Clean up the temporary file
-rm -f "$TEMP_PATH"
+echo "💾 Installing to $INSTALL_PATH..."
+
+# IMPORTANT: Since the install path check in 2.3 ensures we have permissions,
+# we only need to use 'sudo' if we determined in 2.3 that we need it.
+# Since the new logic only uses the system path if ID=0, we only need 'sudo' if
+# the user ran 'sudo' initially. We can simplify by just running the command
+# as the effective user, which is root if run with sudo.
+
+# Use INSTALL_CMD which is either 'install -m 755' or 'mv'
+if [ "$INSTALL_CMD" = "install -m 755" ]; then
+    # Execution: install -m 755 $TEMP_FILE $INSTALL_PATH
+    if ! $INSTALL_CMD "$TEMP_FILE" "$INSTALL_PATH"; then
+        error_exit "Installation failed with 'install'. Check permissions."
+    fi
+else
+    # Fallback Execution: mv $TEMP_FILE $INSTALL_PATH && chmod +x $INSTALL_PATH
+    if ! "$INSTALL_CMD" "$TEMP_FILE" "$INSTALL_PATH"; then
+        error_exit "Installation failed with 'mv'. Check permissions."
+    fi
+    
+    case "$(uname)" in
+        Linux|Darwin)
+            if ! chmod +x "$INSTALL_PATH"; then
+                error_exit "Failed to set executable permission."
+            fi
+            ;;
+    esac
+fi
 
 echo ""
 
 if [ "$INSTALLED_VERSION" != "None" ]; then
-  echo "hkup updated successfully!"
+    echo "🎉 **$BINARY_ALIAS updated successfully!** (New version: $LATEST_RELEASE)"
 else
-  echo "hkup installed successfully!"
+    echo "✨ **$BINARY_ALIAS installed successfully!** (Version: $LATEST_RELEASE)"
 fi
+
+echo ""
+echo "Please ensure the installation path is in your \$PATH for easy access."
+if [ "$INSTALL_PATH" = "$INSTALL_PATH_USER" ]; then
+    echo "Specifically, $(dirname "$INSTALL_PATH") is often not in the default PATH."
+fi
+
+exit 0
