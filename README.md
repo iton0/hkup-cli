@@ -108,5 +108,9 @@ hkup template edit <template-name>
 hkup template remove <template-name>
 ```
 
+## Contributing
+PRs are welcome! Please review the [CONTRIBUTING.md](CONTRIBUTING.md) before
+getting started.
+
 ## Credits
 [DeAndre Sawyer](https://deandresawyer.myportfolio.com/) for the logo.
