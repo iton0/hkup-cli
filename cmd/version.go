@@ -7,7 +7,7 @@ var versionCmd = &cobra.Command{
 	Short: "Retrieve hkup version",
 	Args:  cobra.NoArgs,
 	Run: func(cmd *cobra.Command, _ []string) {
-		cmd.Println(version)
+		cmd.Printf("hkup version %s\n", version)
 	},
 }
 

@@ -5,9 +5,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// GetConfig prints out the value of a specified configuration setting. Returns error
+// ConfigGet prints out the value of a specified configuration setting. Returns error
 // if issue with getting the value.
-func GetConfig(cmd *cobra.Command, args []string) error {
+func ConfigGet(cmd *cobra.Command, args []string) error {
 	if out, err := util.GetINIValue(args[0]); err != nil {
 		return err
 	} else {

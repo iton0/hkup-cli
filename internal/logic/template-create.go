@@ -42,13 +42,13 @@ var (
 	}{}
 )
 
-// CreateTemplate creates a git hook template from a specific git hook.
+// TemplateCreate creates a git hook template from a specific git hook.
 //
 // Returns error if:
 //   - issue with creating HkUp config directory or template directory
 //   - issue with displaying prompt
 //   - issue with creating the template
-func CreateTemplate(cmd *cobra.Command, args []string) error {
+func TemplateCreate(cmd *cobra.Command, args []string) error {
 	configPath := util.GetConfigDirPath()
 	templatePath := util.GetTemplateDirPath()
 
@@ -220,7 +220,7 @@ func displayHookPrompt(attempts ...int) error {
 		return err
 	}
 
-	if out := git.GetHookUrl(in); out == "" {
+	if isValid := git.CheckHook(in); !isValid {
 		attempt++
 		fmt.Println("Not a supported Git hook. Please try again")
 		return displayHookPrompt(attempt)

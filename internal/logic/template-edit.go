@@ -10,12 +10,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// EditTemplate opens specified template in the default editor for HkUp.
+// TemplateEdit opens specified template in the default editor for HkUp.
 //
 // Returns error if:
 //   - template is not valid
 //   - editor is not found
-func EditTemplate(_ *cobra.Command, args []string) error {
+func TemplateEdit(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 
 	if out, err := doesTemplateExist(templatePath, args[0]); err != nil {

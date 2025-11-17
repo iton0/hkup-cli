@@ -5,13 +5,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var getConfigCmd = &cobra.Command{
+var configGetCmd = &cobra.Command{
 	Use:   "get <config-setting>",
 	Short: "Get a HkUp config setting",
 	Args:  cobra.ExactArgs(1),
-	RunE:  logic.GetConfig,
+	RunE:  logic.ConfigGet,
 }
 
 func init() {
-	configCmd.AddCommand(getConfigCmd)
+	configCmd.AddCommand(configGetCmd)
 }

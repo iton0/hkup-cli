@@ -5,13 +5,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var copyTemplateCmd = &cobra.Command{
+var templateCopyCmd = &cobra.Command{
 	Use:   "copy <template-name>",
 	Short: "Copy a git hook template",
 	Args:  cobra.ExactArgs(1),
-	RunE:  logic.CopyTemplate,
+	RunE:  logic.TemplateCopy,
 }
 
 func init() {
-	templateCmd.AddCommand(copyTemplateCmd)
+	templateCmd.AddCommand(templateCopyCmd)
 }

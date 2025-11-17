@@ -12,7 +12,7 @@ var removeCmd = &cobra.Command{
 	Short:     "Remove git hook",
 	ValidArgs: util.ConvertMapKeysToSlice(git.Hooks()),
 	Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
-	RunE:      logic.RemoveTemplate,
+	RunE:      logic.Remove,
 }
 
 func init() {

@@ -14,3 +14,6 @@ write or configure the scripts from scratch each time.`,
 func init() {
 	rootCmd.AddCommand(templateCmd)
 }
+
+// FIXME: how to properly test the template subcommands without user interaction
+// and changing preexisting user-defined templates

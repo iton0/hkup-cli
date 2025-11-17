@@ -5,13 +5,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var removeTemplateCmd = &cobra.Command{
+var templateRemoveCmd = &cobra.Command{
 	Use:   "remove <template-name>",
 	Short: "Remove a git hook template",
 	Args:  cobra.ExactArgs(1),
-	RunE:  logic.RemoveTemplate,
+	RunE:  logic.TemplateRemove,
 }
 
 func init() {
-	templateCmd.AddCommand(removeTemplateCmd)
+	templateCmd.AddCommand(templateRemoveCmd)
 }
