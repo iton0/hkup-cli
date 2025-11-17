@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.0.0](https://github.com/iton0/hkup-cli/compare/v1.3.2...v2.0.0) (2025-11-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* Command structure has changed in Go source files.
+* The 'doc' command is no longer available. Users should consult the Git documentation directly for hook information.
+* create descriptive error messages
+* This commit removes the ability to use `hkup --` functionality. Parsing for the directory proved to be too difficult.
+
+### Features
+
+* add version command ([26698c4](https://github.com/iton0/hkup-cli/commit/26698c437ce9053d4e5ba744c965e271f0ca9c53))
+* refactor commands and add comprehensive unit tests ([8d7a946](https://github.com/iton0/hkup-cli/commit/8d7a9468b76388af47b47d969b47353717ea1f1e))
+* remove 'doc' command ([7cf9b1d](https://github.com/iton0/hkup-cli/commit/7cf9b1d1b95f5a32317aafed41ec6827e7b3c1cc))
+* remove root command functionality ([9b5204a](https://github.com/iton0/hkup-cli/commit/9b5204af52cc7bd9e2200a94a2cdc5554d04c4fc))
+* rework installation script for robustness ([4c905f6](https://github.com/iton0/hkup-cli/commit/4c905f6f109d122f9afdfb8e3bac8f1b66dbabc0))
+
+
+### Code Refactoring
+
+* create descriptive error messages ([0c0c298](https://github.com/iton0/hkup-cli/commit/0c0c298dede9f295db6b36afdba7033cc54354a2))
+
 ## [1.3.2](https://github.com/iton0/hkup-cli/compare/v1.3.1...v1.3.2) (2025-05-20)
 
 
