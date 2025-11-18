@@ -3,15 +3,14 @@
 # Define the gofumpt formatter command
 GOFUMPT_CMD="gofumpt"
 
-# 1. Get a list of staged Go files
-# --cached: Check staged files
-# --name-only: Get just the file names
-# --diff-filter=ACMR: Include Added, Copied, Modified, and Renamed files
-# -z: Delimits output with NULL characters for safe handling of filenames with spaces
-STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACMR -z -- '*.go')
+# --- Define the file list generator command ---
+# Uses -z to delimit output with NULL characters for safe handling of filenames
+# Storing this in a variable makes the script cleaner.
+STAGED_GO_FILES_CMD="git diff --cached --name-only --diff-filter=ACMR -z -- '*.go'"
 
-# Check if the list of files is empty
-if [ -z "$STAGED_FILES" ]; then
+# 1. Check if any staged Go files exist
+# This runs the command once to check for output.
+if ! eval "$STAGED_GO_FILES_CMD" | grep -q . ; then
     echo "No staged Go files to format. Skipping gofumpt."
     exit 0
 fi
@@ -21,9 +20,9 @@ echo "Running gofumpt on staged Go files..."
 echo "---"
 
 # 2. Run gofumpt on the files
-# xargs -0 reads the NULL-delimited list of files from STAGED_FILES.
-# -w writes the changes back to the working copy.
-echo "$STAGED_FILES" | xargs -0 -r "$GOFUMPT_CMD" -w
+# Pipe the NULL-delimited file list DIRECTLY into xargs -0.
+# The -w flag writes the changes back to the working copy.
+eval "$STAGED_GO_FILES_CMD" | xargs -0 -r "$GOFUMPT_CMD" -w
 
 # Check gofumpt's exit code
 GOFUMPT_EXIT_CODE=$?
@@ -35,14 +34,12 @@ if [ $GOFUMPT_EXIT_CODE -ne 0 ]; then
 fi
 
 # 3. Re-stage any files that gofumpt modified
-# The formatter changed the files in the working directory, so the changes
-# must be added back to the staging area to be included in the commit.
 echo "---"
 echo "Re-staging formatted files..."
 echo "---"
 
-# -u adds files that are already tracked and have been modified (i.e., by gofumpt)
-echo "$STAGED_FILES" | xargs -0 -r git add -u
+# Pipe the NULL-delimited file list DIRECTLY into xargs -0 to re-stage them.
+eval "$STAGED_GO_FILES_CMD" | xargs -0 -r git add -u
 
 # Final success message and exit
 echo "gofumpt formatting complete and changes re-staged."
