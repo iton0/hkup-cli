@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/iton0/hkup-cli/compare/v2.0.0...v2.0.1) (2025-11-24)
+
+
+### Bug Fixes
+
+* update internal module path for v2 compliance ([5867da1](https://github.com/iton0/hkup-cli/commit/5867da1288828e1e119a1f6f670da25d6dbe9c38))
+
 ## [2.0.0](https://github.com/iton0/hkup-cli/compare/v1.3.2...v2.0.0) (2025-11-17)
 
 
