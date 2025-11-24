@@ -3,7 +3,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/iton0/hkup-cli/internal/testutil"
+	"github.com/iton0/hkup-cli/v2/internal/testutil"
 )
 
 func TestRootCmd(t *testing.T) {

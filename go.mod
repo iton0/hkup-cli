@@ -1,4 +1,4 @@
-module github.com/iton0/hkup-cli
+module github.com/iton0/hkup-cli/v2
 
 go 1.25.0
 
