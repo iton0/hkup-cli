@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/iton0/hkup-cli/compare/v2.0.1...v2.0.2) (2025-11-24)
+
+
+### Bug Fixes
+
+* **ci:** inject correct module path for ldflags versioning ([bbdd5cc](https://github.com/iton0/hkup-cli/commit/bbdd5ccad026ffd3bee4fe6244de633a87ab1de8))
+
 ## [2.0.1](https://github.com/iton0/hkup-cli/compare/v2.0.0...v2.0.1) (2025-11-24)
 
 
