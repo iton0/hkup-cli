@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/iton0/hkup-cli/compare/v2.0.0...v3.0.0) (2025-11-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* The module path is now github.com/iton0/hkup-cli/v2. This is a structural fix to enable v2 tags to be discovered by the Go proxy.
+
+### Code Refactoring
+
+* fix internal module path for v2 compliance ([3235ba0](https://github.com/iton0/hkup-cli/commit/3235ba024e73709ba24ac77e2a4f6047d39baae2))
+
 ## [2.0.0](https://github.com/iton0/hkup-cli/compare/v1.3.2...v2.0.0) (2025-11-17)
 
 
