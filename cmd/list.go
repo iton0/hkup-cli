@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/iton0/hkup-cli/internal/logic"
+	"github.com/iton0/hkup-cli/v2/internal/logic"
 	"github.com/spf13/cobra"
 )
 

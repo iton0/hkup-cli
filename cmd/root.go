@@ -25,7 +25,7 @@ func init() {
 }
 
 // Execute serves as a wrapper for the Cobra API's Execute function, allowing it
-// to be called from the [github.com/iton0/hkup-cli] package.
+// to be called from the [github.com/iton0/hkup-cli/v2] package.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

@@ -2,7 +2,7 @@
 Package logic provides functionality for managing Git hooks, including commands
 to add, remove, and list hooks.
 This package utilizes the cobra library for command-line interaction and is
-implemented in the respective commands of the [github.com/iton0/hkup-cli/cmd] package.
+implemented in the respective commands of the [github.com/iton0/hkup-cli/v2/cmd] package.
 
 Commands:
   - Init: Initializes HkUp.

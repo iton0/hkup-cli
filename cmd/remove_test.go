@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/iton0/hkup-cli/internal/testutil"
+	"github.com/iton0/hkup-cli/v2/internal/testutil"
 )
 
 func TestRemoveCmd(t *testing.T) {
