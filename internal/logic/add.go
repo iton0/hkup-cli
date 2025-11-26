@@ -3,8 +3,8 @@ package logic
 import (
 	"fmt"
 
-	"github.com/iton0/hkup-cli/internal/git"
-	"github.com/iton0/hkup-cli/internal/util"
+	"github.com/iton0/hkup-cli/v2/internal/git"
+	"github.com/iton0/hkup-cli/v2/internal/util"
 	"github.com/spf13/cobra"
 )
 
@@ -16,9 +16,12 @@ var LangFlg string
 // programming language in the designated .hkup directory. Returns error if any
 // of the steps fail above.
 func Add(_ *cobra.Command, args []string) error {
-	_, err := isBareRepo(".")
-	if err != nil { // Current working directory is not a git repository at all
-		return err
+	if !util.IsGitDirectory(".") { // Current working directory is not a git repository at all
+		return fmt.Errorf("current working directory is not a git directory.\nNeed to initialize git")
+	}
+
+	if !util.DoesDirectoryExist(util.HkupDirName) {
+		return fmt.Errorf("%s does not exist in current working directory", util.HkupDirName)
 	}
 
 	hook := args[0]
@@ -47,7 +50,7 @@ func Add(_ *cobra.Command, args []string) error {
 
 	_, err = file.WriteString(sheBangLine)
 	if err != nil {
-		return err
+		return fmt.Errorf("issue writing shebang line to %s", file.Name())
 	}
 
 	return util.MakeExecutable(filePath)

@@ -1,4 +1,4 @@
-package template
+package logic
 
 import (
 	"fmt"
@@ -6,18 +6,18 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/iton0/hkup-cli/internal/util"
+	"github.com/iton0/hkup-cli/v2/internal/util"
 	"github.com/spf13/cobra"
 )
 
-// Copy copies a git hook template to the .hkup directory.
+// TemplateCopy copies a git hook template to the .hkup directory.
 //
 // Returns error if:
 //   - HkUp config directory does not exist
 //   - .hkup directory does not exist in current working directory
 //   - arg is not valid template name
 //   - issue with copying template to .hkup directory
-func Copy(_ *cobra.Command, args []string) error {
+func TemplateCopy(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 	var templateName string
 
@@ -47,7 +47,7 @@ func Copy(_ *cobra.Command, args []string) error {
 func doesTemplateExist(templatePath, name string) (string, error) {
 	files, err := os.ReadDir(templatePath)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("issue reading %s", templatePath)
 	}
 
 	for _, file := range files {

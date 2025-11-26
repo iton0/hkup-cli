@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/iton0/hkup-cli/internal/logic"
+	"github.com/iton0/hkup-cli/v2/internal/logic"
 	"github.com/spf13/cobra"
 )
 
@@ -18,4 +18,5 @@ func init() {
 	initCmd.Flags().StringVar(&logic.GitDirFlg, "gitdir", "", "specified path to git directory")
 	initCmd.Flags().StringVar(&logic.WorkTreeFlg, "worktree", "", "specified path to working tree")
 	initCmd.MarkFlagsRequiredTogether("gitdir", "worktree")
+	rootCmd.AddCommand(initCmd)
 }

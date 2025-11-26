@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/iton0/hkup-cli/internal/git"
-	"github.com/iton0/hkup-cli/internal/logic"
-	"github.com/iton0/hkup-cli/internal/util"
+	"github.com/iton0/hkup-cli/v2/internal/git"
+	"github.com/iton0/hkup-cli/v2/internal/logic"
+	"github.com/iton0/hkup-cli/v2/internal/util"
 	"github.com/spf13/cobra"
 )
 
@@ -15,4 +15,6 @@ var removeCmd = &cobra.Command{
 	RunE:      logic.Remove,
 }
 
-func init() {}
+func init() {
+	rootCmd.AddCommand(removeCmd)
+}

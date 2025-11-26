@@ -1,4 +1,4 @@
-package template
+package logic
 
 import (
 	"fmt"
@@ -6,16 +6,16 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/iton0/hkup-cli/internal/util"
+	"github.com/iton0/hkup-cli/v2/internal/util"
 	"github.com/spf13/cobra"
 )
 
-// Edit opens specified template in the default editor for HkUp.
+// TemplateEdit opens specified template in the default editor for HkUp.
 //
 // Returns error if:
 //   - template is not valid
 //   - editor is not found
-func Edit(_ *cobra.Command, args []string) error {
+func TemplateEdit(_ *cobra.Command, args []string) error {
 	templatePath := util.GetTemplateDirPath()
 
 	if out, err := doesTemplateExist(templatePath, args[0]); err != nil {
@@ -49,7 +49,7 @@ func getEditor() (string, error) {
 	out, err := exec.Command("git", "config", "--global", "core.editor").CombinedOutput()
 	if len(strings.TrimSpace(string(out))) != 0 {
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("issue checking global git editor configuration")
 		} else {
 			return string(out[:(len(out) - 1)]), nil
 		}
