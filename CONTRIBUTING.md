@@ -1,3 +1,5 @@
+> Thank you for your interest in contributing! 
+
 ## Prerequisites
 
 Before getting started with development please make sure to:
