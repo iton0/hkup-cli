@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.0.0](https://github.com/iton0/hkup-cli/compare/v1.3.2...v2.0.0) (2025-11-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cmd:** The command and internal logic module structure has been completely flattened. Subcommands (like `config` and `template`) and their logic are now defined in standalone files within the top-level `cmd/` and `internal/logic/` directories (e.g., `cmd/config/get.go` is now `cmd/config-get.go`).
+
+### Features
+
+* bump Go module to v2, upgrade Go/dependencies, and refactor Git logic ([887ec35](https://github.com/iton0/hkup-cli/commit/887ec3554f0ad5096e2fbc982e3560276fd046a8))
+* change license from MIT to GPLv3 ([13b3c85](https://github.com/iton0/hkup-cli/commit/13b3c855b452dae40cc6ab9b51e5c174aceba143))
+
+
+### Code Refactoring
+
+* **cmd:** flatten command structure and update module paths ([165dc44](https://github.com/iton0/hkup-cli/commit/165dc447ad01b895758df763188f21260f5c382d))
+
 ## [1.3.2](https://github.com/iton0/hkup-cli/compare/v1.3.1...v1.3.2) (2025-05-20)
 
 
