@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.1](https://github.com/iton0/hkup-cli/compare/v2.0.0...v2.0.1) (2025-11-26)
+
+
+### Bug Fixes
+
+* **README:** use proper capitalization for HkUp ([f7ec160](https://github.com/iton0/hkup-cli/commit/f7ec1600effd59411a98aec0f493e198f60faba2))
+
 ## [2.0.0](https://github.com/iton0/hkup-cli/compare/v1.3.2...v2.0.0) (2025-11-26)
 
 
