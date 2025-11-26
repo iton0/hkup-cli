@@ -19,12 +19,20 @@ Despite their benefits, many developers avoid Git hooks due to a lack of awarene
 HkUp simplifies Git hook management, allowing you to **focus on the logic and functionality of your hooks**. Plus, with HkUp, **your hooks are version-controlled**.
 
 ## Installation
+
+This script downloads and installs the latest release binary from GitHub.
+
 ### External Dependencies:
-- `git`
-- `curl`
-- `grep`
+
+The following core system utilities are required for the installation script to run successfully:
+
+* **`curl`**: Used to fetch the latest release information and download the binary.
+* **`grep`** & **`sed`**: Essential command-line text processing tools.
+* **`jq`** (Recommended): Provides reliable JSON parsing for fetching the latest version from the GitHub API. If `jq` is not found, the script will fall back to using `grep` and `sed`.
+* **`install`** (Optional): A standard utility used for atomic file replacement and securely setting executable permissions. If not found, the script will fall back to using `mv` and `chmod`.
+
 > [!NOTE]
-> Windows users need to install [Cygwin](https://cygwin.com/install.html) and add External Dependencies via the Cygwin setup program.
+> Windows users must execute the installation script within a Unix-like environment such as **Cygwin**, **MSYS2**, or **WSL** (Windows Subsystem for Linux) and ensure the dependencies above are installed within that environment.
 
 ### Install Script
 Run the script below:
@@ -45,9 +53,6 @@ sh -c 'rm "$(command -v 'hkup')"'
 This section provides basic information about core usage. For detailed usage information run `hkup --help`.
 
 ### Initializing hkup
-HkUp provides two ways of initializing:
-
-#### 1. Creating a New Repository
 After you create a Git repository, run the following command in your Git repository to initialize HkUp:
 
 ```sh
@@ -55,17 +60,6 @@ hkup init
 ```
 
 This creates a **.hkup** directory and sets the local **core.hooksPath** variable. If the directory already exists, it will simply update the path variable. The path is relative, ensuring that moving your repository won’t affect hook sourcing.
-
-#### 2. Cloning a Repository
-The above command also works after cloning a repository but HkUp also provides means to wrap Git-related cloning commands for an easier process. By prepending your Git cloning command with `hkup --` you can clone your repository and initialize/reinitialize HkUp in a single command.
-
-```sh
-# Cloning the HkUp Github repository
-# and initializing the .hkup folder
-hkup -- git clone git@github.com:iton0/hkup-cli.git
-```
-> [!NOTE]
-> This works even for bare Git repositories!
 
 ### Adding & Removing hooks
 Add or remove hooks easily with:
@@ -113,6 +107,10 @@ hkup template edit <template-name>
 ```sh
 hkup template remove <template-name>
 ```
+
+## Contributing
+PRs are welcome! Please review the [CONTRIBUTING.md](CONTRIBUTING.md) before
+getting started.
 
 ## Credits
 [DeAndre Sawyer](https://deandresawyer.myportfolio.com/) for the logo.
