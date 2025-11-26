@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.3](https://github.com/iton0/hkup-cli/compare/v2.0.2...v2.0.3) (2025-11-26)
+
+
+### Bug Fixes
+
+* **release:** retract erroneous module versions [v2.0.1, v2.0.2] to fix version history ([2ad054d](https://github.com/iton0/hkup-cli/commit/2ad054dce8b910d63e1d8d91e008a0f7deac3b99))
+
 ## [2.0.2](https://github.com/iton0/hkup-cli/compare/v2.0.1...v2.0.2) (2025-11-26)
 
 
