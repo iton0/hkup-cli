@@ -15,11 +15,11 @@ jobs:
     steps:
       # Step 1: Check out the repository
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Step 2: Set up Go environment
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version-file: 'go.mod'
 
@@ -37,16 +37,18 @@ jobs:
           VERSION="${{ steps.release.outputs.version }}"
           echo "Updating version to ${VERSION}"
 
+          VERSION_PATH="github.com/iton0/hkup-cli/v2/cmd.version"
+
           mkdir -p bin
 
           # Build for Linux
-          GOOS=linux GOARCH=amd64 go build -o bin/hkup-linux -ldflags="-s -w -X github.com/iton0/hkup-cli/cmd.version=${VERSION}" .
+          GOOS=linux GOARCH=amd64 go build -o bin/hkup-linux -ldflags="-s -w -X ${VERSION_PATH}=${VERSION}" .
 
           # Build for Darwin/macOS
-          GOOS=darwin GOARCH=amd64 go build -o bin/hkup-darwin -ldflags="-s -w -X github.com/iton0/hkup-cli/cmd.version=${VERSION}" .
+          GOOS=darwin GOARCH=amd64 go build -o bin/hkup-darwin -ldflags="-s -w -X ${VERSION_PATH}=${VERSION}" .
 
           # Build for Windows
-          GOOS=windows GOARCH=amd64 go build -o bin/hkup.exe -ldflags="-s -w -X github.com/iton0/hkup-cli/cmd.version=${VERSION}" .
+          GOOS=windows GOARCH=amd64 go build -o bin/hkup.exe -ldflags="-s -w -X ${VERSION_PATH}=${VERSION}" .
 
       # Step 5: Upload Release Artifacts if a release was created
       - name: Upload Release Artifacts
