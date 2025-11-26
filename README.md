@@ -52,7 +52,7 @@ sh -c 'rm "$(command -v 'hkup')"'
 ## Usage Quickstart
 This section provides basic information about core usage. For detailed usage information run `hkup --help`.
 
-### Initializing hkup
+### Initializing HkUp
 After you create a Git repository, run the following command in your Git repository to initialize HkUp:
 
 ```sh
