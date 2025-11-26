@@ -42,6 +42,13 @@ func CreateDirectory(path string) error {
 	return os.MkdirAll(path, os.ModePerm)
 }
 
+// IsGitDirectory reports if given directory (dir) is a git directory. Works for
+// both regular and bare git directories.
+func IsGitDirectory(dir string) bool {
+	_, err := exec.Command("git", "-C", dir, "rev-parse", "--git-dir").Output()
+	return err == nil
+}
+
 // CreateFile makes a new file in the specified file path name.
 // Returns pointer to the new file and an error if the operation fails.
 //
@@ -49,7 +56,7 @@ func CreateDirectory(path string) error {
 func CreateFile(path string) (*os.File, error) {
 	file, err := os.Create(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("issue with creating %s", path)
 	}
 
 	return file, nil
@@ -104,7 +111,7 @@ func RunCommandInTerminal(root string, args ...string) error {
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Start(); err != nil {
-		return err
+		return fmt.Errorf("issue starting %s", cmd.String())
 	}
 
 	return cmd.Wait()
@@ -133,18 +140,18 @@ func CopyFile(src, dst string) error {
 
 	srcFile, err := os.Open(src)
 	if err != nil {
-		return err
+		return fmt.Errorf("issue opening %s", src)
 	}
 	defer srcFile.Close()
 
 	dstFile, err := os.Create(dst)
 	if err != nil {
-		return err
+		return fmt.Errorf("issue creating %s", dst)
 	}
 	defer dstFile.Close()
 
 	if _, err = io.Copy(dstFile, srcFile); err != nil {
-		return err
+		return fmt.Errorf("issue copying %s to %s", srcFile.Name(), dstFile.Name())
 	}
 
 	return nil
@@ -215,7 +222,7 @@ func GetINIValue(key string) (string, error) {
 
 	content, err := os.ReadFile(GetConfigFilePath())
 	if err != nil && exist && DoesFileExist(GetConfigFilePath()) {
-		return "", err
+		return "", fmt.Errorf("issue reading %s", GetConfigFilePath())
 	}
 
 	lines := strings.Split(string(content), "\n")
@@ -263,21 +270,21 @@ func SetINIValue(key, newValue string) error {
 
 	if !DoesDirectoryExist(GetConfigDirPath()) {
 		if err := CreateDirectory(GetConfigDirPath()); err != nil {
-			return err
+			return fmt.Errorf("issue creating %s", GetConfigDirPath())
 		}
 	}
 
 	if !DoesFileExist(filePath) {
 		file, err := CreateFile(filePath)
 		if err != nil {
-			return err
+			return fmt.Errorf("issue creating %s", filePath)
 		}
 		file.Close()
 	}
 
 	content, err := os.ReadFile(filePath)
 	if err != nil {
-		return err
+		return fmt.Errorf("issue reading %s", filePath)
 	}
 
 	lines := strings.Split(string(content), "\n")

@@ -11,41 +11,40 @@ in various programming environments.
 package git
 
 var (
-	// hooks is a map of Git hook names to their respective section of the
-	// Git hooks documentation site.
+	// hooks is a map of all available Git hook names.
 	//
-	// INFO: This map is up to date as of 11/19/2024.
+	// INFO: This map is up to date as of 11/17/2025.
 	// SOURCE: https://git-scm.com/docs/githooks
 	// NOTE: update the date whenever modifying the map
-	hooks = map[string]string{
-		"applypatch-msg":        "_applypatch_msg",
-		"pre-applypatch":        "_pre_applypatch",
-		"post-applypatch":       "_post_applypatch",
-		"pre-commit":            "_pre_commit",
-		"pre-merge-commit":      "_pre_merge_commit",
-		"prepare-commit-msg":    "_prepare_commit_msg",
-		"commit-msg":            "_commit_msg",
-		"post-commit":           "_post_commit",
-		"pre-rebase":            "_pre_rebase",
-		"post-checkout":         "_post_checkout",
-		"post-merge":            "_post_merge",
-		"pre-push":              "_pre_push",
-		"pre-receive":           "pre-receive",
-		"update":                "update",
-		"proc-receive":          "proc-receive",
-		"post-receive":          "post-receive",
-		"post-update":           "post-update",
-		"reference-transaction": "_reference_transaction",
-		"push-to-checkout":      "_push_to_checkout",
-		"pre-auto-gc":           "_pre_auto_gc",
-		"post-rewrite":          "_post_rewrite",
-		"sendemail-validate":    "_sendemail_validate",
-		"fsmonitor-watchman":    "_fsmonitor_watchman",
-		"p4-changelist":         "_p4_changelist",
-		"p4-prepare-changelist": "_p4_prepare_changelist",
-		"p4-post-changelist":    "_p4_post_changelist",
-		"p4-pre-submit":         "_p4_pre_submit",
-		"post-index-change":     "_post_index_change",
+	hooks = map[string]bool{
+		"applypatch-msg":        true,
+		"pre-applypatch":        true,
+		"post-applypatch":       true,
+		"pre-commit":            true,
+		"pre-merge-commit":      true,
+		"prepare-commit-msg":    true,
+		"commit-msg":            true,
+		"post-commit":           true,
+		"pre-rebase":            true,
+		"post-checkout":         true,
+		"post-merge":            true,
+		"pre-push":              true,
+		"pre-receive":           true,
+		"update":                true,
+		"proc-receive":          true,
+		"post-receive":          true,
+		"post-update":           true,
+		"reference-transaction": true,
+		"push-to-checkout":      true,
+		"pre-auto-gc":           true,
+		"post-rewrite":          true,
+		"sendemail-validate":    true,
+		"fsmonitor-watchman":    true,
+		"p4-changelist":         true,
+		"p4-prepare-changelist": true,
+		"p4-post-changelist":    true,
+		"p4-pre-submit":         true,
+		"post-index-change":     true,
 	}
 
 	// supportedLangs is a map indicating which programming languages are supported
@@ -61,19 +60,15 @@ var (
 	}
 )
 
-// GetHookUrl retrieves URL section of git doc site for specified Git hook.
-// Returns URL section of specified hook or empty string if hook not supported.
-func GetHookUrl(key string) string {
-	val, exist := hooks[key]
-	if !exist {
-		return ""
-	}
+// CheckHook reports if a specified hook is in supported Git hooks.
+func CheckHook(key string) bool {
+	_, exist := hooks[key]
 
-	return val
+	return exist
 }
 
 // Hooks returns the complete map of all defined Git hooks.
-func Hooks() map[string]string {
+func Hooks() map[string]bool {
 	return hooks
 }
 
