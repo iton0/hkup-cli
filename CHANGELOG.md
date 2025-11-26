@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.0.2](https://github.com/iton0/hkup-cli/compare/v2.0.1...v2.0.2) (2025-11-26)
+
+
+### Bug Fixes
+
+* add welcoming statement to contributing doc ([20874d9](https://github.com/iton0/hkup-cli/commit/20874d985489c923ee092bce7dd21d35d99a7b73))
+
 ## [2.0.1](https://github.com/iton0/hkup-cli/compare/v2.0.0...v2.0.1) (2025-11-26)
 
 
