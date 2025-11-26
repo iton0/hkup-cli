@@ -1,8 +1,8 @@
 <img alt="HkUp Logo" align="left" height="128" src="/assets/logo.svg" /> *Your CLI tool with benefits built by [iton0](https://github.com/iton0) in [Go](https://go.dev/)!*
 
 [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/iton0/hkup-cli)](https://github.com/iton0/hkup-cli/releases/latest)
-[![godoc](https://godoc.org/github.com/iton0/hkup-cli?status.svg)](http://godoc.org/github.com/iton0/hkup-cli)
-[![Go Report Card](https://goreportcard.com/badge/github.com/iton0/hkup-cli)](https://goreportcard.com/report/github.com/iton0/hkup-cli)
+[![godoc](https://godoc.org/github.com/iton0/hkup-cli/v2?status.svg)](http://godoc.org/github.com/iton0/hkup-cli/v2)
+[![Go Report Card](https://goreportcard.com/badge/github.com/iton0/hkup-cli/v2)](https://goreportcard.com/report/github.com/iton0/hkup-cli/v2)
 
 ![GitHub watchers](https://img.shields.io/github/watchers/iton0/hkup-cli?style=social)
 ![GitHub stars](https://img.shields.io/github/stars/iton0/hkup-cli?style=social)
