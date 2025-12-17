@@ -27,6 +27,6 @@ Additional project-specific requirements include:
     - there is the `internal/testutil` package that should use
 - following the file name convention for commands with subcommands:
     Ex. a command `echo` with subcommands `hello` and `bye` should have files:
-        - *echo.go* 
-        - *echo-hello.go*
-        - *echo-bye.go*
+    - *echo.go* 
+    - *echo-hello.go*
+    - *echo-bye.go*
