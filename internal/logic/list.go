@@ -3,6 +3,7 @@ package logic
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/iton0/hkup-cli/v2/internal/git"
 	"github.com/iton0/hkup-cli/v2/internal/util"
@@ -47,13 +48,13 @@ func List(cmd *cobra.Command, args []string) error {
 
 // formatOutput formats the output string slice as a string that is returned
 func formatOutput(out []string) string {
-	var fout string
+	var fout strings.Builder
 
 	for _, val := range out {
-		fout += " " + val + "\n"
+		fout.WriteString(" " + val + "\n")
 	}
 
-	return fout
+	return fout.String()
 }
 
 // getConfigSettings returns configuration settings with appropriate

@@ -225,9 +225,9 @@ func GetINIValue(key string) (string, error) {
 		return "", fmt.Errorf("issue reading %s", GetConfigFilePath())
 	}
 
-	lines := strings.Split(string(content), "\n")
+	lines := strings.SplitSeq(string(content), "\n")
 
-	for _, line := range lines {
+	for line := range lines {
 		line = strings.TrimSpace(line)
 
 		// Skip comments or empty lines
