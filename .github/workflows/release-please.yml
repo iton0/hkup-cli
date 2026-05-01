@@ -26,7 +26,7 @@ jobs:
       # Step 3: Use release-please to create a release
       - name: Create release
         id: release  # Added ID for referencing outputs
-        uses: googleapis/release-please-action@v4
+        uses: googleapis/release-please-action@v5
         with:
           release-type: go
 
