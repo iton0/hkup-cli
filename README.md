@@ -37,7 +37,7 @@ The following core system utilities are required for the installation script to 
 ### Install Script
 Run the script below:
 ```sh
-curl -sSL https://raw.githubusercontent.com/iton0/hkup-cli/main/scripts/install | sh
+curl -sSL https://raw.githubusercontent.com/iton0/hkup-cli/main/scripts/install | bash
 ```
 > [!Tip]
 > To update HkUp, simply rerun the script above. It will automatically replace your current version with the latest stable release.
