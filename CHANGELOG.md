@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/iton0/hkup-cli/compare/v2.1.0...v2.2.0) (2026-05-30)
+
+
+### Features
+
+* **install:** modernize install script with arm64, checksums, and security hardening ([80a28fc](https://github.com/iton0/hkup-cli/commit/80a28fc14040c9b285c7391d9e46b867f74af928))
+
 ## [2.1.0](https://github.com/iton0/hkup-cli/compare/v2.0.3...v2.1.0) (2026-03-19)
 
 
