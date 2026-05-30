@@ -35,20 +35,24 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: |
           VERSION="${{ steps.release.outputs.version }}"
-          echo "Updating version to ${VERSION}"
+          echo "Building version ${VERSION}"
 
           VERSION_PATH="github.com/iton0/hkup-cli/v2/cmd.version"
+          LDFLAGS="-s -w -X ${VERSION_PATH}=${VERSION}"
 
           mkdir -p bin
 
-          # Build for Linux
-          GOOS=linux GOARCH=amd64 go build -o bin/hkup-linux -ldflags="-s -w -X ${VERSION_PATH}=${VERSION}" .
+          GOOS=linux   GOARCH=amd64  go build -o bin/hkup-linux-amd64   -ldflags="$LDFLAGS" .
+          GOOS=linux   GOARCH=arm64  go build -o bin/hkup-linux-aarch64  -ldflags="$LDFLAGS" .
+          GOOS=darwin  GOARCH=amd64  go build -o bin/hkup-darwin-amd64  -ldflags="$LDFLAGS" .
+          GOOS=darwin  GOARCH=arm64  go build -o bin/hkup-darwin-aarch64 -ldflags="$LDFLAGS" .
+          GOOS=windows GOARCH=amd64  go build -o bin/hkup.exe            -ldflags="$LDFLAGS" .
 
-          # Build for Darwin/macOS
-          GOOS=darwin GOARCH=amd64 go build -o bin/hkup-darwin -ldflags="-s -w -X ${VERSION_PATH}=${VERSION}" .
-
-          # Build for Windows
-          GOOS=windows GOARCH=amd64 go build -o bin/hkup.exe -ldflags="-s -w -X ${VERSION_PATH}=${VERSION}" .
+          # Generate SHA256 checksums
+          cd bin
+          for f in hkup-linux-amd64 hkup-linux-aarch64 hkup-darwin-amd64 hkup-darwin-aarch64 hkup.exe; do
+            sha256sum "$f" | awk '{print $1}' > "${f}.sha256"
+          done
 
       # Step 5: Upload Release Artifacts if a release was created
       - name: Upload Release Artifacts

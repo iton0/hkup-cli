@@ -1,263 +1,259 @@
 #!/bin/bash
-
 # ==============================================================================
 # hkup-cli Installation/Update Script
-# A robust, cross-platform script for installing/updating the hkup-cli binary.
 # ==============================================================================
 
+set -euo pipefail
+
 REPO="iton0/hkup-cli"
-BINARY_ALIAS="hkup" 
+BINARY_ALIAS="hkup"
 
-# --- 1. Utility Functions and Safety ---
+# --- Utilities ---
 
-# Function to handle errors and exit
-error_exit() {
-    echo "ERROR: $1" >&2
-    exit 1
+err()      { printf 'error: %s\n' "$1" >&2; exit 1; }
+say()      { printf '%s\n' "$1"; }
+say_warn() { printf 'warning: %s\n' "$1" >&2; }
+ensure()   { if ! "$@"; then err "Command failed: $*"; fi; }
+need_cmd() { command -v "$1" >/dev/null 2>&1 || err "Required dependency '$1' not found. Please install it."; }
+check_cmd(){ command -v "$1" >/dev/null 2>&1; }
+
+# Strip leading 'v'/'V' from version strings
+version_strip() { printf '%s' "${1#[vV]}"; }
+
+# --- Cleanup ---
+
+_tmpdir=""
+cleanup() {
+    local _code=$?
+    [ -n "$_tmpdir" ] && rm -rf "$_tmpdir"
+    exit "$_code"
+}
+trap cleanup EXIT INT TERM HUP
+
+# --- Platform Detection ---
+
+detect_platform() {
+    local _os _arch
+    _os="$(uname -s)"
+    _arch="$(uname -m)"
+
+    case "$_arch" in
+        x86_64|amd64)  _arch="amd64" ;;
+        aarch64|arm64) _arch="aarch64" ;;
+        *) err "Unsupported architecture: $_arch" ;;
+    esac
+
+    # Rosetta 2: uname -m reports x86_64 but machine is actually arm64
+    if [ "$_os" = "Darwin" ] && [ "$_arch" = "amd64" ]; then
+        if sysctl hw.optional.arm64 2>/dev/null | grep -q ': 1'; then
+            _arch="aarch64"
+        fi
+    fi
+
+    case "$_os" in
+        Linux)               BINARY_NAME="hkup-linux-${_arch}" ;;
+        Darwin)              BINARY_NAME="hkup-darwin-${_arch}" ;;
+        CYGWIN*|MINGW*|MSYS*) BINARY_NAME="hkup.exe" ;;
+        *) err "Unsupported OS: $_os. Only Linux, macOS, and Windows (Cygwin/MSYS/MinGW) are supported." ;;
+    esac
 }
 
-# Function to strip 'v' or 'V' prefix from version strings
-version_strip() {
-    # Remove 'v' or 'V' prefix and any subsequent non-numeric characters until the first digit
-    echo "$1" | sed -E 's/^[vV]+//g'
+# --- Install Path Detection ---
+
+detect_install_path() {
+    local _os
+    _os="$(uname -s)"
+
+    case "$_os" in
+        Linux|Darwin)
+            if [ "$(id -u)" = "0" ] && [ -n "${SUDO_USER:-}" ]; then
+                local _original_home
+                _original_home="$(getent passwd "$SUDO_USER" | cut -d: -f6 2>/dev/null || printf '/home/%s' "$SUDO_USER")"
+                INSTALL_DIR="/usr/local/bin"
+                CONFIG_DIR="${_original_home}/.config/${BINARY_ALIAS}"
+                CONFIG_OWNER="$SUDO_USER"
+            elif [ "$(id -u)" = "0" ]; then
+                INSTALL_DIR="/usr/local/bin"
+                CONFIG_DIR="${HOME}/.config/${BINARY_ALIAS}"
+                CONFIG_OWNER="root"
+            else
+                INSTALL_DIR="${HOME}/.local/bin"
+                CONFIG_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/${BINARY_ALIAS}"
+                CONFIG_OWNER="$(id -un)"
+            fi
+            ;;
+        CYGWIN*|MINGW*|MSYS*)
+            INSTALL_DIR="${HOME}/bin"
+            CONFIG_DIR="${LOCALAPPDATA:-${HOME}/AppData/Local}/${BINARY_ALIAS}"
+            CONFIG_OWNER="$(id -un)"
+            ;;
+    esac
+
+    INSTALL_PATH="${INSTALL_DIR}/${BINARY_ALIAS}"
+    TEMPLATES_DIR="${CONFIG_DIR}/templates"
 }
 
-# --- 1.1 Dependency Check ---
-echo "--- Checking Dependencies ---"
-REQUIRED_COMMANDS=("curl" "grep" "sed")
+# --- Checksum Verification ---
 
-for cmd in "${REQUIRED_COMMANDS[@]}"; do
-    if ! command -v "$cmd" >/dev/null 2>&1; then
-        error_exit "Required dependency '$cmd' not found. Please install it to continue."
+verify_checksum() {
+    local _file="$1" _expected_file="$2" _got _expected
+    if check_cmd sha256sum; then
+        _got="$(sha256sum "$_file" | awk '{print $1}')"
+    elif check_cmd shasum; then
+        _got="$(shasum -a 256 "$_file" | awk '{print $1}')"
+    else
+        say_warn "No sha256 tool found (sha256sum or shasum). Skipping integrity check."
+        return 0
     fi
-done
+    _expected="$(cat "$_expected_file")"
+    if [ "$_got" != "$_expected" ]; then
+        err "Checksum mismatch for $(basename "$_file"):
+  expected: $_expected
+  got:      $_got"
+    fi
+    say "Checksum verified."
+}
 
-if ! command -v jq >/dev/null 2>&1; then
-    echo "Warning: 'jq' not found. Falling back to less reliable grep/sed parsing for version number." >&2
+# --- Atomic Binary Install ---
+
+install_binary() {
+    local _src="$1" _dst="$2" _dst_dir _staging
+    _dst_dir="$(dirname "$_dst")"
+    ensure mkdir -p "$_dst_dir"
+    # Stage inside dst dir so mv is atomic (same filesystem)
+    _staging="$(mktemp "${_dst_dir}/.tmp.XXXXXXXXXX")"
+    ensure cp "$_src" "$_staging"
+    ensure chmod 755 "$_staging"
+    ensure mv "$_staging" "$_dst"
+}
+
+# --- PATH Check ---
+
+check_path() {
+    case ":${PATH}:" in
+        *":${INSTALL_DIR}:"*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+# --- Main ---
+
+say "--- Checking Dependencies ---"
+need_cmd curl
+need_cmd grep
+need_cmd sed
+say "Dependencies OK."
+
+# Detect platform and install paths
+detect_platform
+detect_install_path
+
+say ""
+say "--- Configuration ---"
+say "Binary: ${BINARY_NAME}"
+say "Install path: ${INSTALL_PATH}"
+say "Config dir: ${CONFIG_DIR}"
+
+# Progress: suppress in CI or non-interactive shells
+if [ "${CI:-}" = "true" ] || [ ! -t 1 ]; then
+    CURL_PROGRESS="--silent"
+else
+    CURL_PROGRESS="--progress-bar"
 fi
 
-if command -v install >/dev/null 2>&1; then
-    INSTALL_CMD="install -m 755"
-    echo "Using 'install' command."
-else
-    INSTALL_CMD="mv"
-    echo "Warning: 'install' not found. Falling back to 'mv' and manual chmod." >&2
+# Create directories
+ensure mkdir -p "$(dirname "$INSTALL_PATH")"
+ensure mkdir -p "$CONFIG_DIR" "$TEMPLATES_DIR"
+if [ "$(id -u)" = "0" ] && [ -n "${SUDO_USER:-}" ]; then
+    chown -R "${CONFIG_OWNER}:${CONFIG_OWNER}" "$CONFIG_DIR" 2>/dev/null \
+        || say_warn "Failed to set ownership of ${CONFIG_DIR} to ${CONFIG_OWNER}."
 fi
 
-echo "Dependencies OK."
+# --- Version Check ---
+say ""
+say "--- Checking for Latest Version ---"
 
-TEMP_FILE="$(mktemp)" || error_exit "Failed to create temporary file."
-trap 'rm -f "$TEMP_FILE"' EXIT HUP INT TERM
+_api_response="$(curl --proto '=https' --tlsv1.2 -fsSL \
+    "https://api.github.com/repos/${REPO}/releases/latest")"
 
-# --- 2. Determine OS-Specific Variables and Install Path (FIXED) ---
-case "$(uname)" in
-    Linux|Darwin)
-        # --- 2.1 Determine Original User, Home Directory, and XDG Path ---
-        
-        # Determine the effective user/home when run with sudo
-        if [ "$(id -u)" = "0" ] && [ -n "$SUDO_USER" ]; then
-            ORIGINAL_USER="$SUDO_USER"
-            ORIGINAL_HOME=$(getent passwd "$ORIGINAL_USER" | cut -d: -f6 2>/dev/null)
-            ORIGINAL_HOME="${ORIGINAL_HOME:-/home/$ORIGINAL_USER}"
-            
-            USER_XDG_CONFIG_HOME="$ORIGINAL_HOME/.config"
-            CONFIG_OWNER="$ORIGINAL_USER"
-            
-        else
-            ORIGINAL_USER="$(id -un)"
-            ORIGINAL_HOME="$HOME"
-            
-            USER_XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-            CONFIG_OWNER="$ORIGINAL_USER"
-        fi
-        
-        # --- 2.2 Define Installation and Configuration Paths ---
-        
-        BINARY_NAME="hkup-$(uname | tr '[:upper:]' '[:lower:]')"
-        INSTALL_PATH_SYSTEM="/usr/local/bin/$BINARY_ALIAS"
-        INSTALL_PATH_USER="$ORIGINAL_HOME/.local/bin/$BINARY_ALIAS"
-        
-        CONFIG_DIR="$USER_XDG_CONFIG_HOME/$BINARY_ALIAS" 
-        TEMPLATES_DIR="$CONFIG_DIR/templates"
-        
-        # --- 2.3 Determine Final Install Path and Sudo Requirement (FIXED LOGIC) ---
-        
-
-        if [ "$(id -u)" = "0" ]; then
-            # If running as root, always target system path and skip user path check.
-            INSTALL_PATH="$INSTALL_PATH_SYSTEM"
-            echo "Selecting system path (Running as root): $INSTALL_PATH"
-
-        elif mkdir -p "$(dirname "$INSTALL_PATH_USER")" && [ -w "$(dirname "$INSTALL_PATH_USER")" ]; then
-            # Running as a regular user, target user path.
-            INSTALL_PATH="$INSTALL_PATH_USER"
-            echo "Selecting user path: $INSTALL_PATH"
-
-        elif [ -w "$(dirname "$INSTALL_PATH_SYSTEM")" ]; then
-            # Regular user, but system path is writable (uncommon, but possible).
-            INSTALL_PATH="$INSTALL_PATH_SYSTEM"
-            echo "Selecting system path (Writable by user): $INSTALL_PATH"
-
-        else
-            error_exit "Could not find a writable installation directory for $BINARY_ALIAS. Tried $INSTALL_PATH_USER and $INSTALL_PATH_SYSTEM. Try running with 'sudo'."
-        fi
-        ;;
-    CYGWIN*|MINGW32*|MSYS*|MINGW*)
-        BINARY_NAME="hkup.exe"
-        BINARY_ALIAS="hkup.exe"
-        INSTALL_PATH="$HOME/bin/$BINARY_ALIAS" 
-        
-        if [ -n "$LOCALAPPDATA" ]; then
-            CONFIG_DIR="${LOCALAPPDATA}/$BINARY_ALIAS"
-        else
-            CONFIG_DIR="$HOME/AppData/Local/$BINARY_ALIAS"
-        fi
-
-        TEMPLATES_DIR="$CONFIG_DIR/templates"
-        CONFIG_OWNER="$(id -un)" 
-        ;;
-    *)
-        error_exit "Unsupported OS: $(uname). Only Linux, macOS, and Windows emulation (Cygwin/MinGW/MSYS) are supported."
-        ;;
-esac
-
-echo "--- Configuration ---"
-echo "Binary Target: $BINARY_NAME"
-echo "Install Path: $INSTALL_PATH"
-echo "Config Root: $CONFIG_DIR (Owner: $CONFIG_OWNER)"
-
-# Create installation directory
-if [ "$(id -u)" = "0" ]; then
-    # If running as root (either directly or via sudo), we rely on root permissions.
-    if ! mkdir -p "$(dirname "$INSTALL_PATH")"; then
-        error_exit "Failed to create installation directory: $(dirname "$INSTALL_PATH")."
-    fi
+if check_cmd jq; then
+    FULL_RELEASE_TAG="$(printf '%s' "$_api_response" | jq -r .tag_name)"
 else
-    # If not root, we rely on the user's permissions, which was checked in 2.3.
-    if ! mkdir -p "$(dirname "$INSTALL_PATH")"; then
-        error_exit "Failed to create installation directory: $(dirname "$INSTALL_PATH")."
-    fi
-fi
-
-# Create config directories and ensure correct ownership
-if [ "$(id -u)" = "0" ] && [ -n "$SUDO_USER" ]; then
-    # Running as root via sudo, use sudo for mkdir and chown
-    if ! mkdir -p "$CONFIG_DIR" "$TEMPLATES_DIR"; then
-        error_exit "Failed to create configuration directories."
-    fi
-    
-    # Set ownership for the config directories to the CONFIG_OWNER
-    if ! chown -R "$CONFIG_OWNER:$CONFIG_OWNER" "$CONFIG_DIR"; then
-        echo "Warning: Failed to set ownership of $CONFIG_DIR to $CONFIG_OWNER. Permissions may be incorrect." >&2
-    fi
-else
-    # Not running as root, just use standard mkdir
-    if ! mkdir -p "$CONFIG_DIR" "$TEMPLATES_DIR"; then
-        error_exit "Failed to create configuration directories."
-    fi
-fi
-
-# --- 3. Version Check ---
-echo "--- Checking for Latest Version ---"
-
-CURL_COMMAND="curl -s https://api.github.com/repos/$REPO/releases/latest"
-
-if command -v jq >/dev/null 2>&1; then
-    FULL_RELEASE_TAG=$($CURL_COMMAND | jq -r .tag_name)
-else
-    FULL_RELEASE_TAG=$($CURL_COMMAND | grep '"tag_name":' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')
+    FULL_RELEASE_TAG="$(printf '%s' "$_api_response" \
+        | grep '"tag_name":' | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
 fi
 
 if [ -z "$FULL_RELEASE_TAG" ] || [ "$FULL_RELEASE_TAG" = "null" ]; then
-    error_exit "Could not retrieve latest release tag from GitHub API. Check network connection or repository path."
+    err "Could not retrieve latest release tag from GitHub API. Check network connection."
 fi
 
-DOWNLOAD_TAG="$FULL_RELEASE_TAG"
-LATEST_RELEASE=$(version_strip "$FULL_RELEASE_TAG")
-echo "Latest version available: **$LATEST_RELEASE**"
+# Validate tag format before using in URLs
+case "$FULL_RELEASE_TAG" in
+    v[0-9]*.[0-9]*.[0-9]*) : ;;
+    *) err "Unexpected tag format from GitHub API: '${FULL_RELEASE_TAG}'. Aborting." ;;
+esac
 
-INSTALLED_VERSION="None"
-VERSION_OUTPUT=""
+LATEST_VERSION="$(version_strip "$FULL_RELEASE_TAG")"
+say "Latest version available: ${LATEST_VERSION}"
 
+# Check installed version
+INSTALLED_VERSION=""
 if [ -x "$INSTALL_PATH" ]; then
-    VERSION_OUTPUT=$("$INSTALL_PATH" --version 2>/dev/null)
+    _ver_output="$("$INSTALL_PATH" --version 2>/dev/null || true)"
+    INSTALLED_VERSION="$(printf '%s' "$_ver_output" \
+        | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
+fi
+if [ -z "$INSTALLED_VERSION" ] && check_cmd "$BINARY_ALIAS"; then
+    _ver_output="$("$BINARY_ALIAS" --version 2>/dev/null || true)"
+    INSTALLED_VERSION="$(printf '%s' "$_ver_output" \
+        | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
 fi
 
-if [ -z "$VERSION_OUTPUT" ] && command -v "$BINARY_ALIAS" >/dev/null 2>&1; then
-    VERSION_OUTPUT=$("$BINARY_ALIAS" --version 2>/dev/null)
-fi
+say "Currently installed: ${INSTALLED_VERSION:-none}"
 
-if [ -n "$VERSION_OUTPUT" ]; then
-    CLEAN_VERSION=$(echo "$VERSION_OUTPUT" | grep -oE '[vV]?[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-    INSTALLED_VERSION=$(version_strip "$CLEAN_VERSION")
-fi
-
-echo "Currently installed version: **${INSTALLED_VERSION:-None}**"
-
-if [ "$INSTALLED_VERSION" = "$LATEST_RELEASE" ]; then
-    echo ""
-    echo "✅ You already have the latest version ($LATEST_RELEASE) installed."
+if [ "${INSTALLED_VERSION:-}" = "$LATEST_VERSION" ]; then
+    say ""
+    say "Already up to date: ${BINARY_ALIAS} ${LATEST_VERSION}"
     exit 0
 fi
 
-echo ""
+# --- Download and Install ---
+say ""
 
-# --- 4. Download and Install (Sudo Handling Simplified) ---
+_tmpdir="$(mktemp -d)"
+_bin_tmp="${_tmpdir}/${BINARY_NAME}"
+_sum_tmp="${_bin_tmp}.sha256"
 
-DOWNLOAD_URL="https://github.com/$REPO/releases/download/$DOWNLOAD_TAG/$BINARY_NAME"
-echo "🚀 Starting download of $BINARY_NAME version $LATEST_RELEASE..."
+DOWNLOAD_BASE="https://github.com/${REPO}/releases/download/${FULL_RELEASE_TAG}"
+BINARY_URL="${DOWNLOAD_BASE}/${BINARY_NAME}"
+CHECKSUM_URL="${DOWNLOAD_BASE}/${BINARY_NAME}.sha256"
 
-if [ -t 1 ]; then
-    PROGRESS_FLAG="--progress-bar"
+say "Downloading ${BINARY_NAME} ${LATEST_VERSION}..."
+ensure curl --proto '=https' --tlsv1.2 -fL "$CURL_PROGRESS" \
+    --output "$_bin_tmp" "$BINARY_URL"
+
+# Download and verify checksum (graceful fallback if .sha256 not found)
+if curl --proto '=https' --tlsv1.2 -fsSL --output "$_sum_tmp" "$CHECKSUM_URL" 2>/dev/null; then
+    verify_checksum "$_bin_tmp" "$_sum_tmp"
 else
-    PROGRESS_FLAG="-s"
+    say_warn "Checksum file not found for this release. Skipping integrity check."
 fi
 
-if ! curl -fL "$DOWNLOAD_URL" -o "$TEMP_FILE" "$PROGRESS_FLAG"; then
-    error_exit "Failed to download the binary from $DOWNLOAD_URL. Check the download URL: $DOWNLOAD_URL"
-fi
+say "Installing to ${INSTALL_PATH}..."
+install_binary "$_bin_tmp" "$INSTALL_PATH"
 
-echo "💾 Installing to $INSTALL_PATH..."
-
-# IMPORTANT: Since the install path check in 2.3 ensures we have permissions,
-# we only need to use 'sudo' if we determined in 2.3 that we need it.
-# Since the new logic only uses the system path if ID=0, we only need 'sudo' if
-# the user ran 'sudo' initially. We can simplify by just running the command
-# as the effective user, which is root if run with sudo.
-
-# Use INSTALL_CMD which is either 'install -m 755' or 'mv'
-if [ "$INSTALL_CMD" = "install -m 755" ]; then
-    # Execution: install -m 755 $TEMP_FILE $INSTALL_PATH
-    if ! $INSTALL_CMD "$TEMP_FILE" "$INSTALL_PATH"; then
-        error_exit "Installation failed with 'install'. Check permissions."
-    fi
+say ""
+if [ -n "${INSTALLED_VERSION:-}" ]; then
+    say "${BINARY_ALIAS} updated: ${INSTALLED_VERSION} -> ${LATEST_VERSION}"
 else
-    # Fallback Execution: mv $TEMP_FILE $INSTALL_PATH && chmod +x $INSTALL_PATH
-    if ! "$INSTALL_CMD" "$TEMP_FILE" "$INSTALL_PATH"; then
-        error_exit "Installation failed with 'mv'. Check permissions."
-    fi
-    
-    case "$(uname)" in
-        Linux|Darwin)
-            if ! chmod +x "$INSTALL_PATH"; then
-                error_exit "Failed to set executable permission."
-            fi
-            ;;
-    esac
+    say "${BINARY_ALIAS} ${LATEST_VERSION} installed."
 fi
 
-echo ""
-
-if [ "$INSTALLED_VERSION" != "None" ]; then
-    echo "🎉 **$BINARY_ALIAS updated successfully!** (New version: $LATEST_RELEASE)"
-else
-    echo "✨ **$BINARY_ALIAS installed successfully!** (Version: $LATEST_RELEASE)"
-fi
-
-echo ""
-echo "Please ensure the installation path is in your \$PATH for easy access."
-if [ "$INSTALL_PATH" = "$INSTALL_PATH_USER" ]; then
-    echo "Specifically, $(dirname "$INSTALL_PATH") is often not in the default PATH."
+if ! check_path; then
+    say ""
+    say "Note: ${INSTALL_DIR} is not in your PATH."
+    say "Add to your shell profile (~/.bashrc, ~/.zshrc, ~/.profile):"
+    say "  export PATH=\"${INSTALL_DIR}:\$PATH\""
 fi
 
 exit 0
