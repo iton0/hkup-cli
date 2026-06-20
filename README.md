@@ -1,11 +1,16 @@
-<img alt="HkUp Logo" align="left" height="128" src="/assets/logo.svg" /> *Your CLI tool with benefits built by [iton0](https://github.com/iton0) in [Go](https://go.dev/)!*
+> [!IMPORTANT]
+> **This repository has moved to Codeberg.**
+> All future development, issues, and releases are at **[codeberg.org/iton0/hkup-cli](https://codeberg.org/iton0/hkup-cli)**.
+> This GitHub repo is archived and no longer maintained.
 
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/iton0/hkup-cli)](https://github.com/iton0/hkup-cli/releases/latest)
-[![godoc](https://godoc.org/github.com/iton0/hkup-cli/v2?status.svg)](http://godoc.org/github.com/iton0/hkup-cli/v2)
-[![Go Report Card](https://goreportcard.com/badge/github.com/iton0/hkup-cli/v2)](https://goreportcard.com/report/github.com/iton0/hkup-cli/v2)
+---
 
-![GitHub watchers](https://img.shields.io/github/watchers/iton0/hkup-cli?style=social)
-![GitHub stars](https://img.shields.io/github/stars/iton0/hkup-cli?style=social)
+<img alt="HkUp Logo" align="left" height="128" src="https://codeberg.org/iton0/hkup-cli/raw/branch/main/assets/logo.svg" /> *Your CLI tool with benefits built by [iton0](https://codeberg.org/iton0) in [Go](https://go.dev/)!*
+
+[![Codeberg release](https://img.shields.io/gitea/v/release/iton0/hkup-cli?gitea_url=https://codeberg.org)](https://codeberg.org/iton0/hkup-cli/releases/latest)
+[![Go Reference](https://pkg.go.dev/badge/codeberg.org/iton0/hkup-cli/v2.svg)](https://pkg.go.dev/codeberg.org/iton0/hkup-cli/v2)
+[![Go Report Card](https://goreportcard.com/badge/codeberg.org/iton0/hkup-cli/v2)](https://goreportcard.com/report/codeberg.org/iton0/hkup-cli/v2)
+
 #
 Git hooks automate processes in your workflow, enhancing code quality and consistency. Common use cases include:
 - Commit Message Validation
@@ -20,7 +25,7 @@ HkUp simplifies Git hook management, allowing you to **focus on the logic and fu
 
 ## Installation
 
-This script downloads and installs the latest release binary from GitHub.
+This script downloads and installs the latest release binary from Codeberg.
 
 ### External Dependencies:
 
@@ -28,7 +33,7 @@ The following core system utilities are required for the installation script to 
 
 * **`curl`**: Used to fetch the latest release information and download the binary.
 * **`grep`** & **`sed`**: Essential command-line text processing tools.
-* **`jq`** (Recommended): Provides reliable JSON parsing for fetching the latest version from the GitHub API. If `jq` is not found, the script will fall back to using `grep` and `sed`.
+* **`jq`** (Recommended): Provides reliable JSON parsing for fetching the latest version from the Codeberg API. If `jq` is not found, the script will fall back to using `grep` and `sed`.
 * **`install`** (Optional): A standard utility used for atomic file replacement and securely setting executable permissions. If not found, the script will fall back to using `mv` and `chmod`.
 
 > [!NOTE]
@@ -37,7 +42,7 @@ The following core system utilities are required for the installation script to 
 ### Install Script
 Run the script below:
 ```sh
-curl -sSL https://raw.githubusercontent.com/iton0/hkup-cli/main/scripts/install | bash
+curl -sSL https://codeberg.org/iton0/hkup-cli/raw/branch/main/scripts/install | bash
 ```
 > [!Tip]
 > To update HkUp, simply rerun the script above. It will automatically replace your current version with the latest stable release.
@@ -59,7 +64,7 @@ After you create a Git repository, run the following command in your Git reposit
 hkup init
 ```
 
-This creates a **.hkup** directory and sets the local **core.hooksPath** variable. If the directory already exists, it will simply update the path variable. The path is relative, ensuring that moving your repository won’t affect hook sourcing.
+This creates a **.hkup** directory and sets the local **core.hooksPath** variable. If the directory already exists, it will simply update the path variable. The path is relative, ensuring that moving your repository won't affect hook sourcing.
 
 ### Adding & Removing hooks
 Add or remove hooks easily with:
